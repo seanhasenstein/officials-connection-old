@@ -1,10 +1,11 @@
+import { withRouter } from 'next/router';
 import Nav from './Nav';
 import Announcement from './Announcment';
 import Brand from './Brand';
 
-const Header = () => (
+const Header = ({ router }) => (
   <>
-    <Announcement />
+    {router.pathname !== '/register' ? <Announcement /> : null}
     <header>
       <Brand />
       <Nav />
@@ -12,4 +13,4 @@ const Header = () => (
   </>
 );
 
-export default Header;
+export default withRouter(Header);

@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import theme from './theme';
 
 export const globalReset = css`
   /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
@@ -12,7 +13,7 @@ export const globalReset = css`
  */
 
   html {
-    line-height: 1.15; /* 1 */
+    line-height: 1; /* 1 */
     -webkit-text-size-adjust: 100%; /* 2 */
   }
 
@@ -40,9 +41,14 @@ export const globalReset = css`
  * "article" contexts in Chrome, Firefox, and Safari.
  */
 
-  h1 {
-    font-size: 2em;
-    margin: 0.67em 0;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    margin: 0;
   }
 
   /* Grouping content
@@ -351,5 +357,60 @@ export const globalReset = css`
 
   [hidden] {
     display: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 10px;
+  }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  li,
+  button,
+  span {
+    letter-spacing: 0.5px;
+  }
+
+  a {
+    color: #444;
+    text-decoration: none;
+  }
+
+  ul {
+    margin: 0;
+  }
+
+  p,
+  li {
+    font-size: 1.7rem;
+  }
+
+  p {
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  button {
+    border: none;
+    padding: 16px;
+    font-size: 1.6rem;
+    color: #fff;
+    background: ${theme.colors.primary};
+    border-radius: 2px;
+    cursor: pointer;
   }
 `;

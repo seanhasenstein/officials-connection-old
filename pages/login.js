@@ -6,7 +6,6 @@ const Login = () => {
     <>
       <Head>
         <title>Login - Officials Connection</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Brand />
       <main>

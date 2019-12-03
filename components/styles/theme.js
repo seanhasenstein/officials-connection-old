@@ -36,6 +36,7 @@ export default {
   fonts: {
     body: defaultFontStack.join(),
     heading: defaultFontStack.join(),
+    default: defaultFontStack.join(),
   },
   breakpoints: ['600px', '900px'],
 };

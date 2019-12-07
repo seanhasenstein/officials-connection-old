@@ -370,6 +370,8 @@ export const globalReset = css`
   body {
     font-family: 'Barlow Condensed', sans-serif;
     letter-spacing: 0.2px;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
@@ -412,5 +414,10 @@ export const globalReset = css`
     background: ${theme.colors.primary};
     border-radius: 2px;
     cursor: pointer;
+  }
+
+  button:focus {
+    outline: none;
+    box-shadow: ${theme.outline.boxShadow};
   }
 `;

@@ -232,10 +232,8 @@ const styles = css`
     margin-bottom: 50px;
   }
 
-  form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  textarea {
+    min-height: 170px;
   }
 `;
 

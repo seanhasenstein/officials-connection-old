@@ -53,6 +53,7 @@ export const formStyles = css`
   }
 
   fieldset {
+    width: 100%;
     border: none;
     margin: 0 auto 40px;
     padding: 0;
@@ -70,6 +71,7 @@ export const formStyles = css`
 
   input[type='text'],
   input[type='email'],
+  input[type='password'],
   textarea,
   select {
     position: relative;

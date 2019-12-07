@@ -2,8 +2,16 @@
 import { jsx, css } from '@emotion/core';
 import theme from './styles/theme';
 
+const Brand = () => (
+  <div css={styles}>
+    <h1>Officials Connection</h1>
+    <h2>Wisconsin Basketball Yearbook Officials Camps</h2>
+  </div>
+);
+
 const styles = css`
   display: inline-block;
+  z-index: 50;
 
   h1 {
     margin: 0;
@@ -23,12 +31,5 @@ const styles = css`
     letter-spacing: 0.5px;
   }
 `;
-
-const Brand = () => (
-  <div css={styles}>
-    <h1>Officials Connection</h1>
-    <h2>Wisconsin Basketball Yearbook Officials Camps</h2>
-  </div>
-);
 
 export default Brand;

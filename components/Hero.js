@@ -24,6 +24,7 @@ const Hero = () => (
 
 const styles = css`
   text-align: center;
+  margin: 12px 10px;
   padding: 55px 40px;
   background: ${theme.colors.darkGrey};
   background-image: linear-gradient(
@@ -35,8 +36,7 @@ const styles = css`
   background-repeat: no-repeat;
   background-position: center right;
   background-size: cover;
-  border-left: 10px solid #fff;
-  border-right: 10px solid #fff;
+  border-radius: 10px;
 
   h3 {
     margin: 0;
@@ -92,13 +92,20 @@ const styles = css`
     width: 100%;
     padding: 12px;
     letter-spacing: 1px;
+    outline: none;
+    border-radius: 5px;
 
     &:first-of-type {
       border: 1px solid #333;
       border-color: #333 #333 #111;
       box-shadow: inset 0 1px 1px #bbb;
       color: #fff;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+
+      &:focus {
+        box-shadow: inset 0 1px 1px #bbb, 0 0 0 1px rgba(50, 151, 211, 0.3),
+          0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 0 0 4px rgba(50, 151, 211, 0.3);
+      }
     }
 
     &:last-of-type {
@@ -106,6 +113,11 @@ const styles = css`
       box-shadow: inset 0 1px 1px #e8011e;
       border-color: #620a15 #620a15 #4f060f;
       color: #f3fafe;
+
+      &:focus {
+        box-shadow: inset 0 1px 1px #e8011e, 0 0 0 1px rgba(50, 151, 211, 0.3),
+          0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 0 0 4px rgba(50, 151, 211, 0.3);
+      }
     }
   }
 

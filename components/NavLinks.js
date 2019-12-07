@@ -12,7 +12,7 @@ const NavLinks = () => (
   >
     <li>
       <Link href="/">
-        <a>Home</a>
+        <a>Camp Details</a>
       </Link>
     </li>
     <li>
@@ -22,7 +22,7 @@ const NavLinks = () => (
     </li>
     <li>
       <Link href="/login">
-        <a>Login</a>
+        <a>Sign In</a>
       </Link>
     </li>
     <li>

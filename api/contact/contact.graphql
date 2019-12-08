@@ -1,0 +1,23 @@
+type Message {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  message: String!
+}
+
+input NewMessageInput {
+  name: String!
+  email: String!
+  phone: String!
+  message: String!
+}
+
+type Query {
+  # message(id: ID!): Message!
+  me: String!
+}
+
+type Mutation {
+  newMessage(input: NewMessageInput!): Message!
+}

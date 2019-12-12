@@ -42,6 +42,10 @@ export default {
   outline: {
     boxShadow:
       '0 0 0 1px rgba(50, 151, 211, 0.3), 0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 0 0 4px rgba(50, 151, 211, 0.3)',
+    boxShadowInvalid:
+      '0 0 0 1px hsla(4, 84%, 64%, 0.5), 0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 0 0 4px hsla(4, 84%, 64%, 0.5)',
+    boxShadowComplete:
+      '0 0 0 1px hsla(159, 47%, 50%, 0.5), 0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 0 0 4px hsla(159, 47%, 50%, 0.5)',
   },
   breakpoints: ['600px', '900px'],
   hidden: {

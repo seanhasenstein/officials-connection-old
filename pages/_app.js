@@ -1,14 +1,17 @@
+import { useState, useEffect } from 'react';
 import App from 'next/app';
 import Head from 'next/head';
 import { Global } from '@emotion/core';
 import { globalReset } from '../components/styles/globalReset';
+import { ApolloProvider } from '@apollo/react-hooks';
+import client from '../lib/apollo';
 
 class MyApp extends App {
   render() {
-    const { Component } = this.props;
+    const { Component, pageProps } = this.props;
 
     return (
-      <>
+      <ApolloProvider client={client}>
         <Global styles={globalReset} />
         <Head>
           <title>
@@ -20,8 +23,8 @@ class MyApp extends App {
             rel="stylesheet"
           ></link>
         </Head>
-        <Component />
-      </>
+        <Component {...pageProps} />
+      </ApolloProvider>
     );
   }
 }

@@ -1,120 +1,166 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
+import { useState, useEffect, useReducer } from 'react';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import {
+  StripeProvider,
+  Elements,
+  CardElement,
+  injectStripe,
+} from 'react-stripe-elements';
+import gql from 'graphql-tag';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import { formStyles } from '../components/styles/form';
+import { formatRegFormDate } from '../utils';
 import theme from '../components/styles/theme';
-import StatesInputSelect from '../components/StatesInputSelect';
+import StateSelectOptions from '../components/StateSelectOptions';
 import SelectArrowIcon from '../components/icons/SelectArrowIcon';
 import CheckIcon from '../components/icons/CheckIcon';
 
-const fakeKaukaunaSessions = [
-  {
-    id: '1',
-    camp: 'Kaukuana',
-    level: "Women's College",
-    classifications: [],
-    mechanics: '3 Person',
-    dates: ['Friday 6/28', 'Saturday 6/29'],
-    timeFrames: '10am-7pm and 9am-6pm',
-    price: 17000,
-  },
-  {
-    id: '2',
-    camp: 'Kaukuana',
-    level: "Women's College",
-    classifications: [],
-    mechanics: '3 Person',
-    dates: ['Saturday 6/29', 'Sunday 6/30'],
-    timeFrames: ['8am-6pm', '8am-4pm'],
-    price: 17000,
-  },
-  {
-    id: '3',
-    camp: 'Kaukuana',
-    level: "Men's College",
-    classifications: [],
-    mechanics: '3 Person',
-    dates: ['Saturday 6/29', 'Sunday 6/30'],
-    timeFrames: ['8am-6pm', '8am-4pm'],
-    price: 17000,
-  },
-  {
-    id: '4',
-    camp: 'Kaukuana',
-    level: 'High School',
-    classifications: ['Master', 'L5'],
-    mechanics: '3 Person',
-    dates: ['Friday 6/28'],
-    timeFrames: ['9am-7pm'],
-    price: 8500,
-  },
-  {
-    id: '5',
-    camp: 'Kaukuana',
-    level: 'High School',
-    classifications: ['Master', 'L5', 'L4'],
-    mechanics: '3 Person',
-    dates: ['Saturday 6/29'],
-    timeFrames: ['8am-6pm'],
-    price: 8500,
-  },
-  {
-    id: '6',
-    camp: 'Kaukuana',
-    level: 'High School',
-    classifications: ['All Levels'],
-    mechanics: '2 Person',
-    dates: ['Saturday 6/29'],
-    timeFrames: ['11am-9pm'],
-    price: 8500,
-  },
-  {
-    id: '7',
-    camp: 'Kaukuana',
-    level: 'High School',
-    classifications: ['All Levels'],
-    mechanics: '3 Person',
-    dates: ['Saturday 6/29'],
-    timeFrames: ['11am-9pm'],
-    price: 8500,
-  },
-  {
-    id: '8',
-    camp: 'Kaukuana',
-    level: 'High School',
-    classifications: ['All Levels'],
-    mechanics: '2 Person',
-    dates: ['Sunday 6/30'],
-    timeFrames: ['8am-5pm'],
-    price: 8500,
-  },
-  {
-    id: '9',
-    camp: 'Kaukuana',
-    level: 'High School',
-    classifications: ['All Levels'],
-    mechanics: '3 Person',
-    dates: ['Sunday 6/30'],
-    timeFrames: ['8am-5pm'],
-    price: 8500,
-  },
-];
+const INITIAL_STATE = {
+  firstName: 'Sean',
+  lastName: 'Hasenstein',
+  email: 'seanhasenstein@gmail.com',
+  phone: '(920) 207-5984',
+  street1: '3705 N 50th St',
+  street2: '123',
+  city: 'Sheboygan',
+  state: 'WI',
+  zipcode: '53083',
+  wiaaNumber: '1234567890',
+  wiaaClassification: 'MASTER',
+  foodAllergies: 'Gluten',
+  emergencyContactName: 'Nate Hasenstein',
+  emergencyContactPhone: '(920) 123-4567',
+  notes: 'This is my note for you...',
+  liabilityAgreement: true,
+};
 
-const Register = () => {
-  const handleSubmit = e => {
+const reducer = (state, action) => {
+  switch (action.type) {
+    // case 'updateTotal':
+    //   return {...state, total: total }
+    case 'updateField':
+      return { ...state, [action.field]: action.value };
+    case 'reset':
+    default:
+      return INITIAL_STATE;
+  }
+};
+
+const CAMP_SESSION_QUERY = gql`
+  query CAMP_SESSIONS_QUERY($id: ID!) {
+    camp(id: $id) {
+      id
+      sessions {
+        id
+        price
+        attributes {
+          competitionLevel
+          wiaaClassifications
+          dates
+          timeFrames
+          mechanics
+        }
+      }
+    }
+  }
+`;
+
+const CREATE_REGISTRATION_MUTATION = gql`
+  mutation CREATE_REGISTRATION_MUTATION($input: NewRegistrationInput!) {
+    createRegistration(input: $input) {
+      id
+      charge
+      total
+      notes
+      sessions
+      liabilityAgreement
+      created_at
+      updated_at
+    }
+  }
+`;
+
+const InjectedRegistrationForm = props => {
+  const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const { loading, error, data } = useQuery(CAMP_SESSION_QUERY, {
+    variables: { id: 'prod_GKSrwzHaMOWHvJ' },
+  });
+  const [createRegistration] = useMutation(CREATE_REGISTRATION_MUTATION);
+
+  const updateFieldValue = field => event => {
+    dispatch({
+      type: 'updateField',
+      field,
+      value: event.target.value,
+    });
+  };
+
+  const handleCheckboxChange = e => {
+    const value = e.target.checked;
+    const name = e.target.name.split('-');
+    const id = name[1];
+    const price = Number(name[2]);
+
+    // if checked is now true, add to cart array
+    if (value === true) {
+      // add price to the total
+      setTotal(total + price);
+      // add the item to the cart
+      setCart([...cart, { id, price }]);
+    }
+    // if checked is now false, remove from cart array
+    if (value === false) {
+      // subtract value from total
+      setTotal(total - price);
+      // find index that needs to be removed
+      const index = cart.findIndex(el => el.id === id);
+      // copy the cart array
+      const copy = [...cart];
+      // remove index in copied array
+      copy.splice(index, 1);
+      // set cart state with copied array
+      setCart(copy);
+    }
+  };
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    console.log('The form was submitted!');
+    const { token } = await props.stripe.createToken();
+    console.log(token.id);
+
+    const sessions = cart.map(item => item.id);
+
+    const result = await createRegistration({
+      variables: {
+        input: {
+          token: token.id,
+          total,
+          sessions,
+          notes: state.notes,
+          liabilityAgreement: state.liabilityAgreement,
+          email: state.email,
+        },
+      },
+    }).catch(error => console.error(error));
+    console.log(result);
   };
 
   return (
     <Layout>
       <Head>
         <title>Register - Officials Connection</title>
+        <script src="https://js.stripe.com/v3/"></script>
       </Head>
-      <div css={styles}>
+      <div css={styles} className="checkout">
         <h2>2020 Camper Registration</h2>
-        <p>Fill out the following form to register for either of our 2020 camps.</p>
+        <p>
+          Fill out the following form to register for either of our 2020 camps.
+        </p>
         <form onSubmit={handleSubmit} css={formStyles}>
           {/* CHOOSE SESSIONS SECTION */}
           <div className="divider">
@@ -124,47 +170,68 @@ const Register = () => {
           <fieldset>
             <label htmlFor="camp1">Kaukauna Camp</label>
             <div className="checkbox-list">
-              {fakeKaukaunaSessions.map(session => (
-                <div key={session.id}>
-                  <input
-                    type="checkbox"
-                    id={`session-${session.id}`}
-                    name={`session-${session.id}`}
-                    value="1"
-                  />
-                  <label htmlFor={`session-${session.id}`} className="session">
-                    <CheckIcon />
-                    <ul>
-                      <li>
-                        {session.level}
-                        {session.classifications.length > 0
-                          ? ` (${session.classifications
-                              .map((c, i, a) => {
-                                if (i === 0) return c;
-                                if (a.length === 2) {
-                                  if (i === 1) return ` & ${c}`;
-                                }
-                                if (a.length === 3) {
-                                  if (i === 1) return `, ${c}, `;
-                                  if (i === 2) return ` & ${c}`;
-                                }
-                              })
-                              .join('')})`
-                          : null}
-                        {/* {session.classification !== } */}
-                      </li>
-                      <li>
-                        {session.dates.map((d, i) => {
-                          if (i === 0) return d;
-                          if (i === 1) return ` & ${d}`;
-                        })}
-                      </li>
-                      <li>${session.price / 100}</li>
-                      <li>{session.mechanics}</li>
-                    </ul>
-                  </label>
-                </div>
-              ))}
+              {loading ? <div>Loading...</div> : null}
+              {data
+                ? data.camp.sessions.map(session => (
+                    <div key={session.id}>
+                      <input
+                        type="checkbox"
+                        id={`session-${session.id}`}
+                        name={`session-${session.id}-${session.price}`}
+                        checked={cart[session.id]}
+                        onChange={handleCheckboxChange}
+                      />
+                      <label
+                        htmlFor={`session-${session.id}`}
+                        className="session"
+                      >
+                        <CheckIcon />
+                        <ul>
+                          <li>
+                            {session.attributes.competitionLevel ===
+                            'HIGHSCHOOL'
+                              ? 'High School'
+                              : null}
+                            {session.attributes.competitionLevel ===
+                            'MENSCOLLEGE'
+                              ? "Men's College"
+                              : null}
+                            {session.attributes.competitionLevel ===
+                            'WOMENSCOLLEGE'
+                              ? "Women's College"
+                              : null}
+                            {session.attributes.wiaaClassifications[0] !==
+                            'NOTAPPLICABLE'
+                              ? ` (${session.attributes.wiaaClassifications
+                                  .map((c, i, a) => {
+                                    if (c === 'MASTER') c = 'Master';
+                                    if (c === 'ALLLEVELS') c = 'All Levels';
+                                    if (i === 0) return c;
+                                    if (a.length === 2) {
+                                      if (i === 1) return ` & ${c}`;
+                                    }
+                                    if (a.length === 3) {
+                                      if (i === 1) return `, ${c}, `;
+                                      if (i === 2) return ` & ${c}`;
+                                    }
+                                  })
+                                  .join('')})`
+                              : null}
+                          </li>
+                          <li>
+                            {session.attributes.dates.map((d, i) => {
+                              const date = formatRegFormDate(d);
+                              if (i === 0) return date;
+                              if (i === 1) return ` & ${date}`;
+                            })}
+                          </li>
+                          <li>${session.price / 100}</li>
+                          <li>{session.attributes.mechanics}</li>
+                        </ul>
+                      </label>
+                    </div>
+                  ))
+                : null}
             </div>
           </fieldset>
 
@@ -182,6 +249,8 @@ const Register = () => {
               name="firstName"
               placeholder="First Name"
               className="inputTop"
+              value={state.firstName}
+              onChange={updateFieldValue('firstName')}
             />
             <input
               type="text"
@@ -189,6 +258,8 @@ const Register = () => {
               name="lastName"
               placeholder="Last Name"
               className="inputBottom"
+              value={state.lastName}
+              onChange={updateFieldValue('lastName')}
             />
           </fieldset>
           <fieldset>
@@ -198,11 +269,20 @@ const Register = () => {
               id="email"
               name="email"
               className="inputSingle"
+              value={state.email}
+              onChange={updateFieldValue('email')}
             />
           </fieldset>
           <fieldset>
             <label htmlFor="phone">Phone Number</label>
-            <input type="text" id="phone" id="phone" className="inputSingle" />
+            <input
+              type="text"
+              id="phone"
+              id="phone"
+              className="inputSingle"
+              value={state.phone}
+              onChange={updateFieldValue('phone')}
+            />
           </fieldset>
           <fieldset>
             <label htmlFor="address">Home Address</label>
@@ -212,16 +292,29 @@ const Register = () => {
               name="street1"
               placeholder="Street Address"
               className="inputTop"
+              value={state.street1}
+              onChange={updateFieldValue('street1')}
             />
             <input
               type="text"
               id="street2"
               name="street2"
               placeholder="Apt. #"
+              value={state.street2}
+              onChange={updateFieldValue('street2')}
             />
-            <input type="text" id="city" name="city" placeholder="City" />
+            <input
+              type="text"
+              id="city"
+              name="city"
+              placeholder="City"
+              value={state.city}
+              onChange={updateFieldValue('city')}
+            />
             <div className="select">
-              <StatesInputSelect />
+              <select value={state.state} onChange={updateFieldValue('state')}>
+                <StateSelectOptions />
+              </select>
               <SelectArrowIcon />
             </div>
             <input
@@ -230,6 +323,8 @@ const Register = () => {
               name="zipcode"
               placeholder="Zip Code"
               className="inputBottom"
+              value={state.zipcode}
+              onChange={updateFieldValue('zipcode')}
             />
           </fieldset>
 
@@ -238,7 +333,11 @@ const Register = () => {
           <fieldset>
             <label htmlFor="wiaaNumber">WIAA Information</label>
             <div className="select">
-              <select className="inputTop">
+              <select
+                className="inputTop"
+                value={state.wiaaClassification}
+                onChange={updateFieldValue('wiaaClassification')}
+              >
                 <option>Select Your Classification</option>
                 <option value="MASTER">Master</option>
                 <option value="L5">L5</option>
@@ -246,7 +345,7 @@ const Register = () => {
                 <option value="L3">L3</option>
                 <option value="L2">L2</option>
                 <option value="L1">L1</option>
-                <option value="NEW">New Official</option>
+                <option value="NEWOFFICIAL">New Official</option>
               </select>
               <SelectArrowIcon />
             </div>
@@ -256,9 +355,10 @@ const Register = () => {
               name="wiaaNumber"
               placeholder="WIAA Number"
               className="inputBottom"
+              value={state.wiaaNumber}
+              onChange={updateFieldValue('wiaaNumber')}
             />
           </fieldset>
-          {/* ) : null } */}
 
           {/* FOOD ALLERGIES */}
           <fieldset>
@@ -266,6 +366,8 @@ const Register = () => {
             <textarea
               className="inputSingle"
               placeholder="Please list any food allergies that you have."
+              value={state.foodAllergies}
+              onChange={updateFieldValue('foodAllergies')}
             />
           </fieldset>
 
@@ -278,6 +380,8 @@ const Register = () => {
               name="ec-name"
               placeholder="Name"
               className="inputTop"
+              value={state.emergencyContactName}
+              onChange={updateFieldValue('emergencyContactName')}
             />
             <input
               type="text"
@@ -285,14 +389,19 @@ const Register = () => {
               name="ec-number"
               placeholder="Phone Number"
               className="inputBottom"
+              value={state.emergencyContactPhone}
+              onChange={updateFieldValue('emergencyContactPhone')}
             />
           </fieldset>
 
           <fieldset>
-            <label htmlFor="notes">
-              Registration Notes
-            </label>
-            <textarea className="inputSingle" placeholder="Please list any notes or questions that you may have regarding your camp registration..." />
+            <label htmlFor="notes">Registration Notes</label>
+            <textarea
+              className="inputSingle"
+              placeholder="Please list any notes or questions that you may have regarding your camp registration..."
+              value={state.notes}
+              onChange={updateFieldValue('notes')}
+            />
           </fieldset>
 
           {/* LIABILITY AGREEMENT */}
@@ -308,13 +417,22 @@ const Register = () => {
                   type="radio"
                   id="agreement"
                   name="agreement"
-                  value="I Agree"
+                  checked={state.liabilityAgreement}
+                  onChange={updateFieldValue('liabilityAgreement')}
                 />
                 I agree to these terms.
               </label>
             </div>
+
+            {/* STRIPE CC INFO */}
           </fieldset>
-          {/* STRIPE CC INFO */}
+          <fieldset>
+            <div className="divider">
+              <hr />
+              <span>Payment Information</span>
+            </div>
+            <CardElement />
+          </fieldset>
 
           <button>Submit Registration</button>
         </form>
@@ -323,11 +441,11 @@ const Register = () => {
   );
 };
 
+// PAGE STYLES
 const styles = css`
   width: calc(100% - 20px);
   margin: 50px auto;
-  max-width: 380px;
-  /* background: hsla(211, 29%, 93%, 1); */
+  max-width: 450px;
 
   h2 {
     font-size: 2.4rem;
@@ -353,11 +471,11 @@ const styles = css`
       padding: 15px 15px 18px;
       background: #fff;
       border-radius: 6px;
-      border: 2px solid transparent;
+      border: 2px solid #eee;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 0 0 1px #e4e7eb, 0 2px 4px 0 rgba(0, 0, 0, 0.07),
-        0 1px 1.5px 0 rgba(0, 0, 0, 0.05);
+      /* box-shadow: 0 0 0 1px #e4e7eb, 0 2px 4px 0 rgba(0, 0, 0, 0.07),
+        0 1px 1.5px 0 rgba(0, 0, 0, 0.05); */
 
       ul {
         position: relative;
@@ -455,5 +573,30 @@ const styles = css`
     }
   }
 `;
+
+// Wrapping component in StripeProvider
+const RegistrationForm = injectStripe(InjectedRegistrationForm);
+
+const Register = () => {
+  const [stripe, setStripe] = useState(null);
+
+  useEffect(() => {
+    // if on the server...
+    if (typeof window === 'undefined') return;
+
+    // if on the client...
+    if (window.Stripe) {
+      setStripe(Stripe('pk_test_UAxQ0aZr3Nla1TPkosBOAa73'));
+    }
+  }, []);
+
+  return (
+    <StripeProvider stripe={stripe}>
+      <Elements>
+        <RegistrationForm />
+      </Elements>
+    </StripeProvider>
+  );
+};
 
 export default Register;

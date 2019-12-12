@@ -4,6 +4,7 @@ type Message {
   email: String!
   phone: String!
   message: String!
+  created_at: String!
 }
 
 input NewMessageInput {
@@ -14,10 +15,11 @@ input NewMessageInput {
 }
 
 type Query {
-  # message(id: ID!): Message!
-  me: String!
+  message(id: ID!): Message!
+  messages: [Message]!
 }
 
 type Mutation {
   newMessage(input: NewMessageInput!): Message!
+  deleteMessage(id: ID!): Message!
 }

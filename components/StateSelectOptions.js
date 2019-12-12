@@ -1,5 +1,5 @@
-const StatesInputSelect = () => (
-  <select>
+const StateSelectOptions = () => (
+  <>
     <option>State</option>
     <option value="AL">Alabama</option>
     <option value="AK">Alaska</option>
@@ -52,7 +52,7 @@ const StatesInputSelect = () => (
     <option value="WV">West Virginia</option>
     <option value="WI">Wisconsin</option>
     <option value="WY">Wyoming</option>
-  </select>
+  </>
 );
 
-export default StatesInputSelect;
+export default StateSelectOptions;

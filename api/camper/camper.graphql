@@ -1,0 +1,66 @@
+enum WIAAClassification {
+  MASTER
+  L5
+  L4
+  L3
+  L2
+  L1
+  NEWOFFICIAL
+}
+
+type Address {
+  street1: String!
+  street2: String
+  city: String!
+  state: String!
+  zipcode: String!
+}
+
+type EmergencyContact {
+  name: String!
+  phone: String!
+}
+
+type Camper {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  address: Address!
+  wiaaNumber: String
+  wiaaClassification: WIAAClassification
+  foodAllergies: String!
+  emergencyContact: EmergencyContact!
+  adminNotes: [String]
+  created_at: String!
+  updated_at: String!
+  registrations: [Registration]!
+  password: String!
+}
+
+input NewCamperInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  street1: String!
+  street2: String
+  city: String!
+  state: String!
+  zipcode: String!
+  wiaaNumber: String
+  wiaaClassification: WIAAClassification
+  foodAllergies: String
+  emergencyContactName: String!
+  emergencyContactPhone: String!
+  password: String
+}
+
+extend type Query {
+  camper(id: ID!): Camper!
+}
+
+extend type Mutation {
+  newCamper(input: NewCamperInput!): Camper!
+}

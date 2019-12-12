@@ -1,12 +1,26 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { useReducer, useEffect, useRef } from 'react';
+import { useReducer, useRef, useState } from 'react';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import theme from '../components/styles/theme';
 import { formStyles } from '../components/styles/form';
 import { emailFormat } from '../utils';
 import SuccessIcon from '../components/icons/SuccessIcon';
+import ErrorIcon from '../components/icons/ErrorIcon';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+
+const NEW_MESSAGE_MUTATION = gql`
+  mutation NEW_MESSAGE_MUTATION($input: NewMessageInput!) {
+    newMessage(input: $input) {
+      name
+      email
+      phone
+      message
+    }
+  }
+`;
 
 const INITIAL_STATE = {
   name: '',
@@ -18,7 +32,6 @@ const INITIAL_STATE = {
   emailError: '',
   phoneError: '',
   messageError: '',
-  status: 'IDLE',
 };
 
 const reducer = (state, action) => {
@@ -27,8 +40,6 @@ const reducer = (state, action) => {
       return { ...state, [action.field]: action.value };
     case 'updateStatus':
       return { ...state, status: action.status };
-    case 'resetFormData':
-      return { ...INITIAL_STATE, status: 'SUCCESS' };
     case 'reset':
     default:
       return INITIAL_STATE;
@@ -36,20 +47,26 @@ const reducer = (state, action) => {
 };
 
 const Contact = () => {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const successBox = useRef();
-
-  useEffect(() => {
-    if (state.status === 'SUCCESS') {
+  const [
+    newMessage,
+    { data = {}, error: mutationError, loading: mutationLoading },
+  ] = useMutation(NEW_MESSAGE_MUTATION, {
+    onCompleted: data => {
+      setStatus('SUCCESS');
+      dispatch({ type: 'reset' });
       window.scrollTo(0, 0);
-      successBox.current.focus();
-      console.log(document.activeElement);
-    }
-    // clean up the function and allow scrolling again
-    return () => (document.body.style.overflow = 'unset');
+      statusBox.current.focus();
+    },
+    onError: error => {
+      setStatus('ERROR');
+      window.scrollTo(0, 0);
+      statusBox.current.focus();
+      console.log(error);
+    },
   });
-
-  const setStatus = status => dispatch({ type: 'updateStatus', status });
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [status, setStatus] = useState('IDLE');
+  const statusBox = useRef();
 
   const updateFieldValue = field => event => {
     dispatch({
@@ -94,7 +111,7 @@ const Contact = () => {
     return true;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (state.honeypot) {
@@ -105,14 +122,16 @@ const Contact = () => {
     const isValid = validateForm();
 
     if (isValid) {
-      console.log('Everything looks good, submitting the form!', state);
-
-      // send api request to send contact form data
-      // if error then setStatus('ERROR')
-      // if success then setStatus('SUCCESS')
-      setStatus('SUCCESS');
-      dispatch({ type: 'resetFormData' });
-      // TODO: set focus to success button?
+      await newMessage({
+        variables: {
+          input: {
+            name: state.name,
+            email: state.email,
+            phone: state.phone,
+            message: state.message,
+          },
+        },
+      });
     }
   };
 
@@ -121,8 +140,19 @@ const Contact = () => {
       <Head>
         <title>Contact - Officials Connection</title>
       </Head>
-      {state.status === 'SUCCESS' ? (
-        <div css={successMessage} ref={successBox} tabIndex="-1">
+
+      {status === 'ERROR' ? (
+        <div css={errorMessage} ref={statusBox} tabIndex="-1">
+          <ErrorIcon />
+          <div className="message">
+            <h3>Connection Error!</h3>
+            <p>Something went wrong, please try again.</p>
+          </div>
+          <button onClick={() => setStatus('IDLE')} />
+        </div>
+      ) : null}
+      {status === 'SUCCESS' ? (
+        <div css={successMessage} ref={statusBox} tabIndex="-1">
           <SuccessIcon />
           <div className="message">
             <h3>Message Receieved!</h3>
@@ -134,7 +164,9 @@ const Contact = () => {
       <div css={styles}>
         <div className="heading">
           <h2>Contact Us</h2>
-          <p>Send us a message and we will be with you as soon as we can.</p>
+          <p>
+            Send us a message and we will get back to you as soon as we can.
+          </p>
           <form onSubmit={handleSubmit} css={formStyles}>
             <fieldset>
               <label htmlFor="name">Full Name</label>
@@ -188,6 +220,7 @@ const Contact = () => {
               className="honeypot"
               tabIndex="-1"
             />
+            {/* {mutationLoading ? <span>Loading...</span> : null} */}
           </form>
         </div>
       </div>
@@ -202,20 +235,18 @@ const styles = css`
   position: relative;
 
   .heading {
-    background: #f6f6f6;
     padding: 30px 20px;
     margin: 15px auto;
+    background: #fff;
     background-image: linear-gradient(
         to right,
-        rgba(245, 245, 245, 0.8) 40%,
-        rgba(245, 245, 245, 0.8) 100%
+        rgba(255, 255, 255, 0.8) 40%,
+        rgba(255, 255, 255, 0.8) 100%
       ),
       url('./images/contact.jpg');
     background-repeat: no-repeat;
     background-size: contain;
     background-position: top left;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
   }
 
   h2 {
@@ -233,7 +264,7 @@ const styles = css`
   }
 
   textarea {
-    min-height: 170px;
+    min-height: 190px;
   }
 `;
 
@@ -268,6 +299,87 @@ const successMessage = css`
   svg {
     width: 76px;
     fill: #51d098;
+    margin: 0 10px 0 0;
+  }
+
+  h3,
+  p {
+    color: ${theme.colors.darkGrey};
+  }
+
+  h3 {
+    font-size: 2.4rem;
+    font-weight: 400;
+    margin: 0 0 3px;
+  }
+
+  p {
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  button {
+    padding: 0;
+    position: absolute;
+    top: 12px;
+    right: 13px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: none;
+    overflow: hidden;
+
+    &:hover {
+      &::before,
+      &::after {
+        background: ${theme.colors.mediumGrey};
+      }
+    }
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      height: 2px;
+      width: 100%;
+      top: 50%;
+      left: 0;
+      margin-top: -1px;
+      background: #ababab;
+      border-radius: 8px;
+    }
+    &::before {
+      transform: rotate(45deg);
+    }
+    &::after {
+      transform: rotate(-45deg);
+    }
+  }
+`;
+
+const errorMessage = css`
+  width: calc(100% - 30px);
+  margin: 5px auto;
+  padding: 8px 5px;
+  background: hsla(348, 31%, 97%, 1);
+  background: linear-gradient(
+    90deg,
+    hsla(354, 53%, 96%, 1) 0%,
+    hsla(11, 8%, 98%, 1) 100%
+  );
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  position: relative;
+  outline: none;
+
+  svg {
+    width: 80px;
+    fill: hsla(4, 84%, 64%, 1);
     margin: 0 10px 0 0;
   }
 

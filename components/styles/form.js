@@ -203,4 +203,24 @@ export const formStyles = css`
     width: 100%;
     border-radius: 6px;
   }
+
+  .StripeElement {
+    box-shadow: 0 0 0 1px #e4e7eb, 0 2px 4px 0 rgba(0, 0, 0, 0.07),
+      0 1px 1.5px 0 rgba(0, 0, 0, 0.05);
+    padding: 12px;
+    border-radius: 4px;
+    /* font-family: 'Source Code Pro', monospace; */
+
+    &.StripeElement--focus {
+      box-shadow: ${theme.outline.boxShadow};
+    }
+
+    &.StripeElement--complete {
+      box-shadow: ${theme.outline.boxShadowComplete};
+    }
+
+    &.StripeElement--invalid {
+      box-shadow: ${theme.outline.boxShadowInvalid};
+    }
+  }
 `;

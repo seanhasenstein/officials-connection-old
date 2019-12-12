@@ -1,0 +1,77 @@
+# Camp(product), Session(sku), Registration(order), Camper(customer)
+
+enum WIAAClassifications {
+  MASTER
+  L5
+  L4
+  L3
+  L2
+  L1
+  ALLLEVELS
+  NOTAPPLICABLE
+}
+
+enum CompetitionLevel {
+  WOMENSCOLLEGE
+  MENSCOLLEGE
+  HIGHSCHOOL
+}
+
+type SkuAttributes {
+  competitionLevel: CompetitionLevel!
+  wiaaClassifications: [WIAAClassifications]!
+  dates: [String]!
+  timeFrames: [String]!
+  mechanics: String!
+}
+
+# Stripe Product
+type Camp {
+  id: ID!
+  name: String!
+  active: Boolean!
+  livemode: Boolean!
+  attributes: [String]!
+  sessions: [Session]!
+}
+
+# Stripe SKU
+type Session {
+  id: ID!
+  product: ID!
+  price: Int!
+  active: Boolean!
+  livemode: Boolean!
+  attributes: SkuAttributes!
+  # inventory: ?
+  # metadata: ?
+}
+
+input NewCampInput {
+  name: String!
+  attributes: [String]!
+}
+
+input NewSessionInput {
+  product: ID!
+  price: Int!
+  competitionLevel: CompetitionLevel!
+  wiaaClassifications: String!
+  dates: String!
+  timeFrames: String!
+  mechanics: String!
+}
+
+extend type Query {
+  camp(id: ID!): Camp!
+  session(id: ID!): Session!
+}
+
+extend type Mutation {
+  createCamp(input: NewCampInput!): Camp!
+  # updateCamp(): Camp!
+  # deleteCamp(id: ID!): Camp!
+  createSession(input: NewSessionInput!): Session!
+  # updateSession(): Session!
+  # deleteSession(id: ID!): Session!
+}

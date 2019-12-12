@@ -34,7 +34,7 @@ function getDayText(input) {
   if (day === 6) return 'Saturday';
 }
 
-export function convertTime(input) {
+export function formatTime(input) {
   const months = [
     'Jan',
     'Feb',
@@ -53,7 +53,11 @@ export function convertTime(input) {
   const month = months[input.getMonth()];
   const day = input.getDate();
   const hours = input.getHours();
-  const minutes = input.getMinutes();
+  let minutes = input.getMinutes();
+  if (minutes < 10) {
+    // formats to update 12:7 to 12:07
+    minutes = `0${minutes}`;
+  }
 
   if (hours < 12) return `${month} ${day}, ${year} at ${hours}:${minutes}am`;
   if (hours == 12) return `${month} ${day}, ${year} at ${hours}:${minutes}pm`;

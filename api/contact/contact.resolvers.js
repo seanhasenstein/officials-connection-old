@@ -1,5 +1,5 @@
 import ContactMessage from './contact.model';
-import { convertTime } from '../../utils';
+import { formatTime } from '../../utils';
 
 const mailgun = require('mailgun-js')({
   apiKey: process.env.MAILGUN_API_KEY,
@@ -15,7 +15,7 @@ const contactResolvers = {
 
       return {
         ...message,
-        created_at: convertTime(message.created_at),
+        created_at: formatTime(message.created_at),
       };
     },
     async messages(_parent, args, _ctx, _info) {
@@ -66,7 +66,7 @@ const contactResolvers = {
       return `${message._id}`;
     },
     created_at(message, args, _ctx, _info) {
-      return convertTime(message.created_at);
+      return formatTime(message.created_at);
     },
   },
 };

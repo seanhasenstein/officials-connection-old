@@ -35,6 +35,7 @@ const INITIAL_STATE = {
   emergencyContactPhone: '(920) 123-4567',
   notes: 'This is my note for you...',
   liabilityAgreement: true,
+  password: 'password1234',
 };
 
 const reducer = (state, action) => {
@@ -143,7 +144,20 @@ const InjectedRegistrationForm = props => {
           sessions,
           notes: state.notes,
           liabilityAgreement: state.liabilityAgreement,
+          firstName: state.firstName,
+          lastName: state.lastName,
           email: state.email,
+          phone: state.phone,
+          street1: state.street1,
+          street2: state.street2,
+          city: state.city,
+          state: state.state,
+          zipcode: state.zipcode,
+          wiaaNumber: state.wiaaNumber,
+          wiaaClassification: state.wiaaClassification,
+          emergencyContactName: state.emergencyContactName,
+          emergencyContactPhone: state.emergencyContactPhone,
+          password: state.password,
         },
       },
     }).catch(error => console.error(error));

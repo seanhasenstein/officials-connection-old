@@ -3,8 +3,9 @@ type Registration {
   charge: String!
   total: Int!
   notes: String
-  sessions: [String!]!
+  sessions: [Session!]!
   liabilityAgreement: Boolean!
+  camper: Camper!
   created_at: String!
   updated_at: String!
 }
@@ -16,26 +17,25 @@ input NewRegistrationInput {
   notes: String
   liabilityAgreement: Boolean!
   email: String!
-
-  # email: String!
-  # firstName: String
-  # lastName: String
-  # phone: String
-  # street1: String
-  # street2: String
-  # city: String
-  # state: String
-  # zipcode: String
-  # wiaaNumber: String
-  # wiaaClassification: String
-  # foodAllergies: String
-  # emergencyContactName: String
-  # emergencyContactPhone: String
+  firstName: String
+  lastName: String
+  phone: String
+  street1: String
+  street2: String
+  city: String
+  state: String
+  zipcode: String
+  wiaaNumber: String
+  wiaaClassification: String
+  foodAllergies: String
+  emergencyContactName: String
+  emergencyContactPhone: String
+  password: String
 }
 
-# extend type Query {
-#   registration(id: ID!): Registration!
-# }
+extend type Query {
+  registration(id: ID!): Registration!
+}
 
 extend type Mutation {
   createRegistration(input: NewRegistrationInput!): Registration!

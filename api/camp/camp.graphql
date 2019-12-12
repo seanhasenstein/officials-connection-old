@@ -43,8 +43,8 @@ type Session {
   active: Boolean!
   livemode: Boolean!
   attributes: SkuAttributes!
-  # inventory: ?
-  # metadata: ?
+  created: String!
+  updated: String!
 }
 
 input NewCampInput {

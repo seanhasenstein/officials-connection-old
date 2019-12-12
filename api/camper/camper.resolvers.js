@@ -1,4 +1,5 @@
 import Camper from './camper.model';
+import Registration from '../registration/registration.model';
 
 const resolvers = {
   Query: {
@@ -6,7 +7,6 @@ const resolvers = {
       const camper = await Camper.findById(args.id)
         .lean()
         .exec();
-      console.log(camper);
       return camper;
     },
   },
@@ -39,6 +39,14 @@ const resolvers = {
   Camper: {
     id(camper, _args, _ctx, _info) {
       return `${camper._id}`;
+    },
+    async registrations(camper, _args, _ctx, _info) {
+      const registrations = await camper.registrations.map(async reg => {
+        return await Registration.findById(reg)
+          .lean()
+          .exec();
+      });
+      return registrations;
     },
   },
 };

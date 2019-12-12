@@ -23,6 +23,11 @@ const RegistrationSchema = new Schema(
       required: true,
       default: true,
     },
+    camper: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

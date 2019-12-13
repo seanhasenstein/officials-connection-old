@@ -8,6 +8,7 @@ const mailgun = require('mailgun-js')({
 
 const contactResolvers = {
   Query: {
+    // ************* MESSAGE QUERY ************* //
     async message(_parent, args, _ctx, _info) {
       const message = await ContactMessage.findById(args.id)
         .lean()
@@ -24,6 +25,7 @@ const contactResolvers = {
     },
   },
   Mutation: {
+    // ************* NEW MESSAGE MUTATION ************* //
     async newMessage(
       _parent,
       { input: { name, email, phone, message } },
@@ -56,11 +58,13 @@ const contactResolvers = {
 
       return result;
     },
+    // ************* DELETE MESSAGE MUTATION ************* //
     async deleteMessage(_parent, args, _ctx, _info) {
       const message = await ContactMessage.findByIdAndDelete(args.id);
       return message;
     },
   },
+  // ************* MESSAGE TYPE ************* //
   Message: {
     id(message, _args, _ctx, _info) {
       return `${message._id}`;

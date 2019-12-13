@@ -43,8 +43,6 @@ type Session {
   active: Boolean!
   livemode: Boolean!
   attributes: SkuAttributes!
-  created: String!
-  updated: String!
 }
 
 input NewCampInput {

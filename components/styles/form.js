@@ -125,7 +125,7 @@ export const formStyles = css`
 
   input {
     /* height: 36px; FOR LARGE SIZES */
-    height: 40px;
+    height: 42px;
 
     &.honeypot {
       position: absolute;

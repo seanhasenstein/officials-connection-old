@@ -19,19 +19,7 @@ const FeaturesDropdown = () => {
         </li>
         <li>
           <button css={button}>
-            Kaukauna Details <span>+</span>
-          </button>
-          <div className={'content'}>This will be the dropdown content...</div>
-        </li>
-        <li>
-          <button css={button}>
-            Plymouth Details <span>+</span>
-          </button>
-          <div className={'content'}>This will be the dropdown content...</div>
-        </li>
-        <li>
-          <button css={button}>
-            Camp Staff <span>+</span>
+            Sessions Schedule <span>+</span>
           </button>
           <div className={'content'}>This will be the dropdown content...</div>
         </li>

@@ -10,6 +10,7 @@ import {
 } from 'react-stripe-elements';
 import gql from 'graphql-tag';
 import Head from 'next/head';
+import Router from 'next/router';
 import Layout from '../components/Layout';
 import { formStyles } from '../components/styles/form';
 import { formatRegFormDate } from '../utils';
@@ -76,7 +77,31 @@ const CREATE_REGISTRATION_MUTATION = gql`
       charge
       total
       notes
-      sessions
+      camper {
+        id
+        firstName
+        lastName
+        email
+        phone
+        address {
+          street1
+          street2
+          city
+          state
+          zipcode
+        }
+        wiaaNumber
+        wiaaClassification
+        foodAllergies
+        emergencyContact {
+          name
+          phone
+        }
+      }
+      sessions {
+        id
+        price
+      }
       liabilityAgreement
       created_at
       updated_at
@@ -87,11 +112,23 @@ const CREATE_REGISTRATION_MUTATION = gql`
 const InjectedRegistrationForm = props => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [status, setStatus] = useState('IDLE');
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const { loading, error, data } = useQuery(CAMP_SESSION_QUERY, {
     variables: { id: 'prod_GKSrwzHaMOWHvJ' },
   });
-  const [createRegistration] = useMutation(CREATE_REGISTRATION_MUTATION);
+  const [createRegistration, { data: mutationData }] = useMutation(
+    CREATE_REGISTRATION_MUTATION,
+    {
+      onCompleted() {
+        setStatus('SUCCESS');
+        Router.replace('/register', '/register-success', { shallow: true });
+      },
+      onError() {
+        setStatus('ERROR');
+      },
+    }
+  );
 
   const updateFieldValue = field => event => {
     dispatch({
@@ -161,8 +198,58 @@ const InjectedRegistrationForm = props => {
         },
       },
     }).catch(error => console.error(error));
-    console.log(result);
   };
+
+  if (status === 'SUCCESS') {
+    // const { sessions, total, id } = mutationData.createRegistration;
+    // const {
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   phone,
+    // } = mutationData.createRegistration.camper;
+    return (
+      <Layout>
+        <Head>
+          <title>Successful Registration - Officials Connection</title>
+        </Head>
+        <div>
+          <h2>You're successfully registered!</h2>
+          <p>Hi Sean,</p>
+          <p>
+            This is your receipt for your 2020 WBYOC Registration. Below are the
+            details of your payment.
+          </p>
+          <p>
+            You should receive a confirmation email at seanhasenstein@gmail.com.
+          </p>
+          <ul>
+            <li>
+              <h3>Date</h3>
+              <span>Jan. 20, 2020</span>
+            </li>
+            <li>
+              <h3>Registration Total</h3>
+              <span>$255.00</span>
+            </li>
+            <li>
+              <h3>Sessions</h3>
+              <ul>
+                <li>Kaukauna Camp</li>
+                <li>Women's College</li>
+                <li>6/19 and 6/20</li>
+              </ul>
+              <ul>
+                <li>Plymouth Camp</li>
+                <li>High School</li>
+                <li>7/12</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

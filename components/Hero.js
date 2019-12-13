@@ -24,8 +24,7 @@ const Hero = () => (
 
 const styles = css`
   text-align: center;
-  margin: 12px 10px;
-  padding: 55px 40px;
+  padding: 58px 40px;
   background: ${theme.colors.darkGrey};
   background-image: linear-gradient(
       to right,
@@ -36,16 +35,16 @@ const styles = css`
   background-repeat: no-repeat;
   background-position: center right;
   background-size: cover;
-  border-radius: 10px;
 
   h3 {
     margin: 0;
-    font-size: 2rem;
+    font-family: ${theme.fonts.body};
+    font-size: 1.8rem;
     font-weight: 400;
     line-height: 1.3;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.5);
   }
 
   ul {
@@ -53,14 +52,16 @@ const styles = css`
     padding: 0;
 
     li:nth-of-type(1) {
-      font-size: 2.8rem;
+      font-family: ${theme.fonts.heading};
+      font-size: 3rem;
       font-weight: 400;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       color: #fff;
     }
 
     li:nth-of-type(2) {
-      font-size: 2.2rem;
+      margin: 0;
+      font-size: 1.7rem;
       font-weight: 300;
       color: ${theme.colors.accent};
       letter-spacing: 0.7px;
@@ -68,18 +69,14 @@ const styles = css`
   }
 
   p {
-    font-size: 2rem;
-    font-weight: 300;
-    line-height: 1.5;
-    letter-spacing: 1px;
-    color: #333;
-    color: rgba(240, 240, 240, 0.7);
+    letter-spacing: 0.3px;
+    color: rgba(240, 240, 240, 0.6);
   }
 
   h3,
   ul,
   p {
-    margin-bottom: 48px;
+    margin-bottom: 52px;
   }
 
   .cta {

@@ -2,14 +2,10 @@
 import { jsx, css } from '@emotion/core';
 import { useState, useEffect, ReactComponent } from 'react';
 import { withRouter } from 'next/router';
-import Brand from './Brand';
 import Hamburger from './Hamburger';
 import theme from './styles/theme';
 import ActiveLink from './ActiveLink';
-import HomeIcon from './icons/HomeIcon';
-import RegisterIcon from './icons/RegisterIcon';
-import SignInIcon from './icons/SignInIcon';
-import ContactIcon from './icons/ContactIcon';
+import LogoSvg from './icons/LogoSvg';
 
 const Header = ({ router }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -19,58 +15,37 @@ const Header = ({ router }) => {
     if (isNavOpen) {
       document.body.style.overflow = 'hidden';
     }
-    // clean up the function and allow scrolling again
+    // clean up to allow scrolling again
     return () => (document.body.style.overflow = 'unset');
   });
 
   return (
     <header css={styles}>
-      <div className={isNavOpen ? 'bg open' : 'bg'} />
-      <div className={isNavOpen ? 'row open' : 'row'}>
-        <Brand />
-        <Hamburger isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
-      </div>
+      <LogoSvg />
+      <Hamburger isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
       <nav className={isNavOpen ? 'open' : ''}>
-        <ul
-          css={css`
-            list-style: none;
-            padding: 0;
-            margin: 0;
-          `}
-        >
-          <li>
-            <ActiveLink href="/" activeClassName="active">
-              <a>
-                <HomeIcon />
-                Camp Details
-              </a>
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/register" activeClassName="active">
-              <a>
-                <RegisterIcon />
-                Register
-              </a>
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/login" activeClassName="active">
-              <a>
-                <SignInIcon />
-                Sign In
-              </a>
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/contact" activeClassName="active">
-              <a>
-                <ContactIcon />
-                Contact
-              </a>
-            </ActiveLink>
-          </li>
-        </ul>
+        <div className="main">
+          <ActiveLink href="/" activeClassName="active">
+            <a>Home</a>
+          </ActiveLink>
+          <ActiveLink href="/" activeClassName="active">
+            <a>Camp Features</a>
+          </ActiveLink>
+          <ActiveLink href="/" activeClassName="active">
+            <a>Sessions Schedule</a>
+          </ActiveLink>
+          <ActiveLink href="/contact" activeClassName="active">
+            <a>Contact Us</a>
+          </ActiveLink>
+        </div>
+        <div className="cta">
+          <ActiveLink href="/register" activeClassName="active">
+            <a>Register</a>
+          </ActiveLink>
+          <ActiveLink href="/login" activeClassName="active">
+            <a>Sign In</a>
+          </ActiveLink>
+        </div>
       </nav>
     </header>
   );
@@ -78,107 +53,102 @@ const Header = ({ router }) => {
 
 const styles = css`
   padding: 0;
-  position: relative;
+  padding: 18px 20px;
+  width: 100%;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 0 0 1px #e4e7eb, 0 2px 4px 0 rgba(0, 0, 0, 0.07),
+    0 1px 1.5px 0 rgba(0, 0, 0, 0.05);
 
-  .bg {
-    background: #fff;
-    opacity: 0;
-    height: 0vh;
-    width: 100%;
-    z-index: 30;
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    &.open {
-      height: 100vh;
-      opacity: 1;
-    }
+  /* Logo SVG */
+  svg {
+    width: 210px;
   }
 
-  .row {
-    position: relative;
-    z-index: 50;
-    background: #fff;
-    padding: 18px 20px 14px;
-    height: auto;
-  }
+  /* Hamburger button styles are in ./components/Hamburger.js */
 
+  /* NAVIGATION STYLES */
   nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     position: fixed;
-    top: 90px;
+    top: -35%;
     left: 0;
-    right: 10px;
-    width: 96%;
-    height: calc(100vh - 100px);
-    padding: 15px 20px;
-    margin: 0 10px;
+    right: 0;
+    width: 100%;
+    height: calc(100vh - 80px);
+    padding: 0 38px;
     background: #fff;
     border: 10px solid #fff;
-    border-radius: 6px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     z-index: -100;
     opacity: 0;
+    text-align: left;
+    transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 
     &.open {
-      top: 90px;
+      top: 79px;
       z-index: 40;
       opacity: 1;
     }
   }
 
-  ul {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .main {
+    a {
+      display: block;
+      padding: 10px 5px;
+      margin: 25px 0;
+      font-family: ${theme.fonts.body};
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+      color: rgba(46, 49, 52, 0.8);
+      text-transform: uppercase;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(46, 49, 52, 0.12);
+      outline: none;
+      font-size: 15px;
+      letter-spacing: 0.5px;
 
-    li {
-      margin: 0px;
-      padding: 5px 0;
+      &:focus {
+        box-shadow: ${theme.outline.boxShadow};
+        border-radius: 6px;
+      }
+
+      &:hover {
+        color: #000;
+      }
+
+      &:first-of-type {
+        margin-top: 42px;
+      }
     }
   }
 
-  a {
+  & .cta {
+    padding: 25px 0 15px;
+    border-top: 1px solid rgba(46, 49, 52, 0.12);
     display: flex;
-    align-items: center;
-    padding: 12px;
-    font-size: 1.7rem;
-    letter-spacing: 1px;
-    color: ${theme.colors.mediumGrey};
-    text-transform: uppercase;
-    font-weight: 500;
-    border-radius: 6px;
-    transition: all 200ms ease;
-    outline: none;
+    justify-content: space-around;
 
-    &:focus {
-      box-shadow: 0 0 0 1px rgba(50, 151, 211, 0.3),
-        0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 0 0 4px rgba(50, 151, 211, 0.3);
-    }
+    a {
+      font-size: 1.5rem;
+      padding: 14px 20px;
+      letter-spacing: 0.0714em;
+      line-height: 1;
+      text-transform: uppercase;
+      color: rgba(46, 49, 52, 0.8);
+      border-radius: 4px;
 
-    &.active {
-      background: #f2f2f2;
-      color: ${theme.colors.darkGrey};
-
-      svg {
-        fill: ${theme.colors.darkGrey};
+      /* Register button */
+      &:first-of-type {
+        background: #006fde;
+        color: #fff;
+        box-shadow: 0 1px 2px 0 rgba(46, 49, 52, 0.4);
       }
-    }
 
-    &:hover {
-      color: ${theme.colors.darkGrey};
-
-      svg {
-        fill: ${theme.colors.darkGrey};
+      &:last-of-type {
+        padding-right: 0;
       }
-    }
-
-    svg {
-      fill: ${theme.colors.mediumGrey};
-      margin-right: 16px;
-      height: 25px;
-      width: 25px;
     }
   }
 `;

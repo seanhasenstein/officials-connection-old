@@ -12,9 +12,8 @@ const Footer = () => (
 
 const styles = css`
   padding: 60px 30px 45px;
-  margin: 10px;
+  margin: 10px 0 0;
   background: #333;
-  border-radius: 10px;
 
   ul {
     text-align: center;
@@ -28,14 +27,15 @@ const styles = css`
         display: block;
         color: rgba(255, 255, 255, 0.6);
         padding: 16px 10px;
-        font-size: 1.9rem;
-        letter-spacing: 1px;
+        font-family: ${theme.fonts.heading};
+        font-size: 1.8rem;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
         transition: color 100ms ease;
         border-radius: 8px;
 
         &:hover {
           color: #fff;
-          background: #2a2a2a;
         }
 
         &:focus {
@@ -49,10 +49,10 @@ const styles = css`
   div {
     text-align: center;
     color: rgba(255, 255, 255, 0.2);
-    font-size: 1.7rem;
-    letter-spacing: 1px;
-    font-weight: 300;
-    font-style: italic;
+    font-family: ${theme.fonts.heading};
+    font-size: 1.6rem;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
   }
 `;
 

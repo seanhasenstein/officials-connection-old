@@ -1,8 +1,10 @@
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { formatTime } from '../../utils';
 
 const stripeResolvers = {
   Query: {
+    // ************* CAMP QUERY ************* //
     async camp(_, { id }) {
       const camp = await stripe.products
         .retrieve(id)
@@ -35,6 +37,7 @@ const stripeResolvers = {
         sessions,
       };
     },
+    // ************* SESSION QUERY ************* //
     async session(_, { id }) {
       const session = await stripe.skus.retrieve(id).catch(e => console.log(e));
       const splitClasses = session.attributes.wiaaClassifications.split(' ');
@@ -53,6 +56,7 @@ const stripeResolvers = {
     },
   },
   Mutation: {
+    // ************* CREATE CAMP MUTATION ************* //
     async createCamp(_, { input: { name, attributes } }) {
       const camp = await stripe.products.create({
         name,
@@ -60,6 +64,7 @@ const stripeResolvers = {
       });
       return camp;
     },
+    // ************* CREATE SESSION MUTATION ************* //
     async createSession(
       _,
       {

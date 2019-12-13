@@ -249,22 +249,12 @@ const styles = css`
     background-position: top left;
   }
 
-  h2 {
-    margin: 0 0 30px;
-    font-size: 3rem;
-    font-weight: 400;
-    text-transform: uppercase;
-  }
-
   p {
-    font-size: 1.8rem;
-    font-weight: 400;
-    color: #333;
     margin-bottom: 50px;
   }
 
   textarea {
-    min-height: 190px;
+    min-height: 200px;
   }
 `;
 

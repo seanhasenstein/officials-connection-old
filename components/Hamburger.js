@@ -17,14 +17,17 @@ const Hamburger = ({ isNavOpen, setIsNavOpen }) => (
 const styles = css`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
   border: none;
   box-shadow: none;
   background: none;
   padding: 10px;
   cursor: pointer;
   position: absolute;
-  top: 25px;
+  top: 28px;
   right: 16px;
+  height: 35px;
   outline: none;
   z-index: 50;
 
@@ -34,32 +37,37 @@ const styles = css`
   }
 
   span {
-    width: 25px;
-    height: 2px;
+    display: inline-block;
+    width: 22px;
+    height: 1px;
     border-radius: 40px;
     background: ${theme.colors.darkGrey};
   }
 
-  span:nth-last-of-type(2) {
-    margin: 5px 0;
+  span {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out,
+      -webkit-transform 0.2s ease-in-out;
+
+    &:first-of-type {
+      transform-origin: 10%;
+    }
+    &:last-of-type {
+      transform-origin: 20%;
+    }
   }
 
   &.open {
-    width: 39px;
-
     span {
-      transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+      margin: -3px -4px 0px 0px;
 
       :first-of-type {
         transform: rotate(45deg);
-        transform-origin: 10%;
       }
       :nth-of-type(2) {
         opacity: 0;
       }
       :last-of-type {
         transform: rotate(-45deg);
-        transform-origin: 8%;
       }
     }
   }

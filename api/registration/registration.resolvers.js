@@ -5,12 +5,14 @@ import { formatTime } from '../../utils';
 
 const resolvers = {
   Query: {
+    // ************* REGISTRATION QUERY ************* //
     async registration(_parent, args, _ctx, _info) {
       const registration = await Registration.findById(args.id);
       return registration;
     },
   },
   Mutation: {
+    // ************* CREATE REGISTRATION MUTATION ************* //
     async createRegistration(_parent, { input }, _ctx, _info) {
       // 1. Check the total amount server side
       let serverTotal = 0;
@@ -53,15 +55,22 @@ const resolvers = {
         // assign the newly creacted campers id
         camperId = camper._id;
       }
-      console.log(camperId);
+
       // 2. Create the Stripe charge
       const charge = await stripe.charges
         .create({
           amount: serverTotal,
           currency: 'usd',
-          description: `Registration for ${input.email}`,
+          description: `Registration for ${input.firstName} ${input.lastName} <${input.email}>`,
           source: input.token,
           receipt_email: input.email,
+          metadata: {
+            camperId: `${camperId}`,
+            camperName: `${input.firstName} ${input.lastName}`,
+            camperEmail: input.email,
+            camperPhone: input.phone,
+            sessions: input.sessions.join(', '),
+          },
         })
         .catch(error => console.error(error));
       // 3. Create the Registration
@@ -85,6 +94,7 @@ const resolvers = {
       return registration;
     },
   },
+  // ************* REGISTRATION TYPE ************* //
   Registration: {
     id(registration, _args, _ctx, _info) {
       return `${registration._id}`;

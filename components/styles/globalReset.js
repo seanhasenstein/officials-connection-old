@@ -368,8 +368,7 @@ export const globalReset = css`
   }
 
   body {
-    font-family: 'Barlow Condensed', sans-serif;
-    letter-spacing: 0.2px;
+    font-family: ${theme.fonts.default};
     position: relative;
     -webkit-font-smoothing: antialiased;
   }
@@ -380,39 +379,49 @@ export const globalReset = css`
   h4,
   h5,
   h6,
-  p,
-  li,
-  button,
-  span {
+  button {
+    font-family: ${theme.fonts.heading};
     letter-spacing: 0.5px;
   }
 
-  a {
-    color: #444;
-    text-decoration: none;
-  }
-
-  ul {
-    margin: 0;
+  h2 {
+    font-size: 2.8rem;
+    font-weight: 300;
+    line-height: 1.2;
+    margin: 0 0 25px;
   }
 
   p,
-  li {
-    font-size: 1.7rem;
+  ul,
+  li,
+  input,
+  textarea,
+  label {
+    margin: 0;
+    font-family: ${theme.fonts.body};
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: rgb(113, 113, 113);
+    letter-spacing: 0;
+    line-height: 1;
   }
 
   p {
-    line-height: 1.5;
-    margin: 0;
+    line-height: 1.7;
+  }
+
+  a {
+    color: rgb(100, 100, 100);
+    text-decoration: none;
   }
 
   button {
     border: none;
     padding: 16px;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     color: #fff;
     background: ${theme.colors.primary};
-    border-radius: 2px;
+    border-radius: 3px;
     cursor: pointer;
   }
 

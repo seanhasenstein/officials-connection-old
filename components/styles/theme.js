@@ -1,6 +1,6 @@
-import { css } from '@emotion/core';
-
 const defaultFontStack = [
+  'Montserrat',
+  'Barlow',
   '-apple-system',
   'BlinkMacSystemFont',
   'Segoe UI',
@@ -12,6 +12,8 @@ const defaultFontStack = [
   'Segoe UI Emoji',
   'Segoe UI Symbol',
 ];
+
+const headingFontStack = ['Barlow Condensed', 'sans-serif'];
 
 const colors = {
   red: '#B80118',
@@ -36,7 +38,7 @@ export default {
   },
   fonts: {
     body: defaultFontStack.join(),
-    heading: defaultFontStack.join(),
+    heading: headingFontStack.join(),
     default: defaultFontStack.join(),
   },
   outline: {

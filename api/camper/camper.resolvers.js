@@ -3,6 +3,7 @@ import Registration from '../registration/registration.model';
 
 const resolvers = {
   Query: {
+    // ************* CAMPER QUERY ************* //
     async camper(parent, args, _ctx, _info) {
       const camper = await Camper.findById(args.id)
         .lean()
@@ -11,6 +12,7 @@ const resolvers = {
     },
   },
   Mutation: {
+    // ************* NEW CAMPER MUTATION ************* //
     async newCamper(_parent, { input }, _ctx, _info) {
       const camper = await Camper.create({
         firstName: input.firstName,
@@ -36,6 +38,7 @@ const resolvers = {
       return camper;
     },
   },
+  // ************* CAMPER TYPE ************* //
   Camper: {
     id(camper, _args, _ctx, _info) {
       return `${camper._id}`;

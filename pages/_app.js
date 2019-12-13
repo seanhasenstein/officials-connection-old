@@ -19,9 +19,9 @@ class MyApp extends App {
           </title>
           <link rel="icon" href="/favicon.ico" />
           <link
-            href="https://fonts.googleapis.com/css?family=Barlow+Condensed:300,400,400i,500&display=swap"
+            href="https://fonts.googleapis.com/css?family=Barlow+Condensed:400,500|Montserrat:300,400&display=swap"
             rel="stylesheet"
-          ></link>
+          />
         </Head>
         <Component {...pageProps} />
       </ApolloProvider>

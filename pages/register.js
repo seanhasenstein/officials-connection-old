@@ -169,7 +169,6 @@ const InjectedRegistrationForm = props => {
   const handleSubmit = async e => {
     e.preventDefault();
     const { token } = await props.stripe.createToken();
-    console.log(token.id);
 
     const sessions = cart.map(item => item.id);
 

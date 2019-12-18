@@ -8,6 +8,10 @@ enum WIAAClassification {
   NEWOFFICIAL
 }
 
+type SuccessMessage {
+  message: String
+}
+
 type Address {
   street1: String!
   street2: String
@@ -33,10 +37,11 @@ type Camper {
   foodAllergies: String!
   emergencyContact: EmergencyContact!
   adminNotes: [String]
+  registrations: [Registration]!
+  resetToken: String
+  resetTokenExpiry: Float
   created_at: String!
   updated_at: String!
-  registrations: [Registration]!
-  password: String!
 }
 
 input NewCamperInput {
@@ -54,13 +59,15 @@ input NewCamperInput {
   foodAllergies: String
   emergencyContactName: String!
   emergencyContactPhone: String!
-  password: String
+  password: String!
 }
 
 extend type Query {
-  camper(id: ID!): Camper!
+  camper: Camper
 }
 
 extend type Mutation {
   newCamper(input: NewCamperInput!): Camper!
+  camperLogin(email: String!, password: String!): Camper!
+  camperLogout: SuccessMessage
 }

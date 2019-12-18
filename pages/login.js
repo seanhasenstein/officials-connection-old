@@ -1,19 +1,55 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import Head from 'next/head';
+import Router from 'next/router';
 import Link from 'next/link';
 import { formStyles } from '../components/styles/form';
 import theme from '../components/styles/theme';
 import Layout from '../components/Layout';
+import { CURRENT_CAMPER_QUERY } from '../components/CurrentCamper';
+
+const CAMPER_LOGIN_MUTATION = gql`
+  mutation CAMPER_LOGIN_MUTATION($email: String!, $password: String!) {
+    camperLogin(email: $email, password: $password) {
+      id
+      email
+      firstName
+      lastName
+    }
+  }
+`;
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { loading, error, data } = useQuery(CURRENT_CAMPER_QUERY);
+  const [camperLogin] = useMutation(CAMPER_LOGIN_MUTATION, {
+    refetchQueries() {
+      [{ query: CURRENT_CAMPER_QUERY }];
+    },
+    onCompleted() {
+      Router.push('/dashboard');
+    },
+    onError() {
+      // TODO: set error...
+    },
+  });
+
+  if (loading) return <div>Loading...</div>;
+  if (data.camper && typeof window !== 'undefined') Router.push('/dashboard');
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log({ username, password });
+
+    camperLogin({
+      variables: {
+        email,
+        password,
+      },
+    });
   };
 
   return (
@@ -25,14 +61,14 @@ const Login = () => {
         <h3>Sign in to your Account</h3>
         <form css={formStyles} onSubmit={handleSubmit}>
           <fieldset>
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email Address</label>
             <input
               type="text"
-              id="username"
-              name="username"
+              id="email"
+              name="email"
               className="inputSingle"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
             />
           </fieldset>
           <fieldset>

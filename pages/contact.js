@@ -61,7 +61,7 @@ const Contact = () => {
       setStatus('ERROR');
       window.scrollTo(0, 0);
       statusBox.current.focus();
-      console.log(error);
+      console.error(error);
     },
   });
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
@@ -115,7 +115,6 @@ const Contact = () => {
     e.preventDefault();
 
     if (state.honeypot) {
-      console.log('honeypot triggered!');
       return;
     }
 

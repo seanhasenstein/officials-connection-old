@@ -8,7 +8,7 @@ const stripeResolvers = {
     async camp(_, { id }) {
       const camp = await stripe.products
         .retrieve(id)
-        .catch(e => console.log(e));
+        .catch(error => console.error(error));
       const sessions = camp.skus.data.map(
         ({ id, product, price, active, livemode, attributes }) => {
           const splitClasses = attributes.wiaaClassifications.split(' ');

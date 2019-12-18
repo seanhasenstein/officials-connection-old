@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import bcrypt from 'bcrypt';
 import Registration from './registration.model';
 import Camper from '../camper/camper.model';
 import { formatTime } from '../../utils';
@@ -27,10 +28,16 @@ const resolvers = {
         .exec();
       let camperId;
       // if camper exists in DB get the id
-      if (prevCamper) camperId = prevCamper._id;
+      if (prevCamper) {
+        // LOG THEM IN?????
+        camperId = prevCamper._id;
+      }
       // if this is a new camper
       if (!prevCamper) {
-        // 1. create the camper
+        // Hash their password
+        const passwordHash = await bcrypt
+          .hash(input.password, 10)
+          .catch(error => console.error(error));
         const camper = await Camper.create({
           firstName: input.firstName,
           lastName: input.lastName,
@@ -50,7 +57,7 @@ const resolvers = {
             name: input.emergencyContactName,
             phone: input.emergencyContactPhone,
           },
-          password: input.password,
+          password: passwordHash,
         });
         // assign the newly creacted campers id
         camperId = camper._id;
@@ -82,7 +89,6 @@ const resolvers = {
         notes: input.notes,
         liabilityAgreement: input.liablilityAgreement,
       }).catch(error => console.error(error));
-      console.log('registration: ', registration);
 
       // 4. add the new registration id to the camper
       await Camper.updateOne(

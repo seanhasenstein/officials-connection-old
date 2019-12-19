@@ -39,7 +39,9 @@ const stripeResolvers = {
     },
     // ************* SESSION QUERY ************* //
     async session(_, { id }) {
-      const session = await stripe.skus.retrieve(id).catch(e => console.log(e));
+      const session = await stripe.skus
+        .retrieve(id)
+        .catch(e => console.error(e));
       const splitClasses = session.attributes.wiaaClassifications.split(' ');
       const splitDates = session.attributes.dates.split(' ');
       const splitTimeFrames = session.attributes.timeFrames.split(' ');

@@ -1,14 +1,9 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useReducer } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import {
-  StripeProvider,
-  Elements,
-  CardElement,
-  injectStripe,
-} from 'react-stripe-elements';
 import gql from 'graphql-tag';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Router from 'next/router';
 import Layout from '../components/Layout';
@@ -18,6 +13,14 @@ import theme from '../components/styles/theme';
 import StateSelectOptions from '../components/StateSelectOptions';
 import SelectArrowIcon from '../components/icons/SelectArrowIcon';
 import CheckIcon from '../components/icons/CheckIcon';
+import withData from '../lib/apollo';
+
+// load Stripe checkout component client-side only
+// b/c it needs window.Stripe
+const DynamicCheckoutComponent = dynamic(
+  () => import('../components/StripeCheckoutForm'),
+  { ssr: false }
+);
 
 const INITIAL_STATE = {
   firstName: 'Sean',
@@ -129,7 +132,7 @@ const InjectedRegistrationForm = props => {
       },
     }
   );
-
+  console.log(data);
   const updateFieldValue = field => event => {
     dispatch({
       type: 'updateField',
@@ -199,68 +202,15 @@ const InjectedRegistrationForm = props => {
     }).catch(error => console.error(error));
   };
 
-  if (status === 'SUCCESS') {
-    // const { sessions, total, id } = mutationData.createRegistration;
-    // const {
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   phone,
-    // } = mutationData.createRegistration.camper;
-    return (
-      <Layout>
-        <Head>
-          <title>Successful Registration - Officials Connection</title>
-        </Head>
-        <div>
-          <h2>You're successfully registered!</h2>
-          <p>Hi Sean,</p>
-          <p>
-            This is your receipt for your 2020 WBYOC Registration. Below are the
-            details of your payment.
-          </p>
-          <p>
-            You should receive a confirmation email at seanhasenstein@gmail.com.
-          </p>
-          <ul>
-            <li>
-              <h3>Date</h3>
-              <span>Jan. 20, 2020</span>
-            </li>
-            <li>
-              <h3>Registration Total</h3>
-              <span>$255.00</span>
-            </li>
-            <li>
-              <h3>Sessions</h3>
-              <ul>
-                <li>Kaukauna Camp</li>
-                <li>Women's College</li>
-                <li>6/19 and 6/20</li>
-              </ul>
-              <ul>
-                <li>Plymouth Camp</li>
-                <li>High School</li>
-                <li>7/12</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <Head>
-        <title>Register - Officials Connection</title>
-        <script src="https://js.stripe.com/v3/"></script>
+        <title>WBYOC Registration - Officials Connection</title>
+        <script src="https://js.stripe.com/v3/" />
       </Head>
       <div css={styles} className="checkout">
-        <h2>2020 Camper Registration</h2>
-        <p>
-          Fill out the following form to register for either of our 2020 camps.
-        </p>
+        <h2>2020 WBYOC Registration</h2>
+        <p>Please fill out the following form to register for a 2020 camp.</p>
         <form onSubmit={handleSubmit} css={formStyles}>
           {/* CHOOSE SESSIONS SECTION */}
           <div className="divider">
@@ -270,7 +220,6 @@ const InjectedRegistrationForm = props => {
           <fieldset>
             <label htmlFor="camp1">Kaukauna Camp</label>
             <div className="checkbox-list">
-              {loading ? <div>Loading...</div> : null}
               {data
                 ? data.camp.sessions.map(session => (
                     <div key={session.id}>
@@ -523,16 +472,9 @@ const InjectedRegistrationForm = props => {
                 I agree to these terms.
               </label>
             </div>
+          </fieldset>
 
-            {/* STRIPE CC INFO */}
-          </fieldset>
-          <fieldset>
-            <div className="divider">
-              <hr />
-              <span>Payment Information</span>
-            </div>
-            <CardElement />
-          </fieldset>
+          <DynamicCheckoutComponent />
 
           <button>Submit Registration</button>
         </form>
@@ -574,8 +516,6 @@ const styles = css`
       border: 2px solid #eee;
       cursor: pointer;
       position: relative;
-      /* box-shadow: 0 0 0 1px #e4e7eb, 0 2px 4px 0 rgba(0, 0, 0, 0.07),
-        0 1px 1.5px 0 rgba(0, 0, 0, 0.05); */
 
       ul {
         position: relative;
@@ -674,29 +614,4 @@ const styles = css`
   }
 `;
 
-// Wrapping component in StripeProvider
-const RegistrationForm = injectStripe(InjectedRegistrationForm);
-
-const Register = () => {
-  const [stripe, setStripe] = useState(null);
-
-  useEffect(() => {
-    // if on the server...
-    if (typeof window === 'undefined') return;
-
-    // if on the client...
-    if (window.Stripe) {
-      setStripe(Stripe('pk_test_UAxQ0aZr3Nla1TPkosBOAa73'));
-    }
-  }, []);
-
-  return (
-    <StripeProvider stripe={stripe}>
-      <Elements>
-        <RegistrationForm />
-      </Elements>
-    </StripeProvider>
-  );
-};
-
-export default Register;
+export default withData(InjectedRegistrationForm);

@@ -32,7 +32,7 @@
     "mailgun-js": "^0.22.0",
     "mongoose": "^5.7.14",
     "next": "9.1.1",
-    "next-apollo": "^3.1.10",
+    "next-with-apollo": "^4.3.0",
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-stripe-elements": "^6.0.1",

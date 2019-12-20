@@ -359,6 +359,8 @@ export const globalReset = css`
     display: none;
   }
 
+  /********************** MY GLOBAL STYLES **********************/
+
   * {
     box-sizing: border-box;
   }
@@ -370,7 +372,7 @@ export const globalReset = css`
   body {
     font-family: ${theme.fonts.default};
     position: relative;
-    -webkit-font-smoothing: antialiased;
+    /* -webkit-font-smoothing: antialiased; */
   }
 
   h1,
@@ -399,9 +401,9 @@ export const globalReset = css`
   label {
     margin: 0;
     font-family: ${theme.fonts.body};
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 300;
-    color: rgb(113, 113, 113);
+    color: rgba(113, 113, 113, 0.8);
     letter-spacing: 0;
     line-height: 1;
   }

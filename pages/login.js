@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Head from 'next/head';
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { formStyles } from '../components/styles/form';
 import theme from '../components/styles/theme';
 import Layout from '../components/Layout';
-import { CURRENT_CAMPER_QUERY } from '../components/CurrentCamper';
+import { CURRENT_CAMPER_QUERY } from '../components/Camper';
 
 const CAMPER_LOGIN_MUTATION = gql`
   mutation CAMPER_LOGIN_MUTATION($email: String!, $password: String!) {
@@ -25,31 +25,23 @@ const CAMPER_LOGIN_MUTATION = gql`
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { loading, error, data } = useQuery(CURRENT_CAMPER_QUERY);
+  const { loading, error, data } = useQuery(CURRENT_CAMPER_QUERY, {
+    ssr: false,
+  });
   const [camperLogin] = useMutation(CAMPER_LOGIN_MUTATION, {
-    refetchQueries() {
-      [{ query: CURRENT_CAMPER_QUERY }];
-    },
-    onCompleted() {
-      Router.push('/dashboard');
-    },
-    onError() {
-      // TODO: set error...
-    },
+    refetchQueries: [{ query: CURRENT_CAMPER_QUERY }],
   });
 
-  if (loading) return <div>Loading...</div>;
-  if (data.camper && typeof window !== 'undefined') Router.push('/dashboard');
-
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
-    camperLogin({
+    const response = await camperLogin({
       variables: {
         email,
         password,
       },
     });
+    Router.push('/dashboard');
   };
 
   return (

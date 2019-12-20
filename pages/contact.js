@@ -1,15 +1,15 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
 import { useReducer, useRef, useState } from 'react';
+import { useMutation } from '@apollo/react-hooks';
 import Head from 'next/head';
+import gql from 'graphql-tag';
 import Layout from '../components/Layout';
 import theme from '../components/styles/theme';
 import { formStyles } from '../components/styles/form';
 import { emailFormat } from '../utils';
 import SuccessIcon from '../components/icons/SuccessIcon';
 import ErrorIcon from '../components/icons/ErrorIcon';
-import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 
 const NEW_MESSAGE_MUTATION = gql`
   mutation NEW_MESSAGE_MUTATION($input: NewMessageInput!) {

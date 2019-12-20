@@ -1,16 +1,22 @@
+import { useQuery } from '@apollo/react-hooks';
 import Layout from '../components/Layout';
 import Hero from '../components/Hero';
 import CampDetails from '../components/CampDetails';
-import FeaturesDropdown from '../components/FeaturesDropdown';
+import Features from '../components/Features';
+import { CURRENT_CAMPER_QUERY } from '../components/Camper';
 
-const Home = () => (
-  <>
-    <Layout>
-      <Hero />
-      <CampDetails />
-      <FeaturesDropdown />
-    </Layout>
-  </>
-);
+const Home = () => {
+  const { loading, error, data } = useQuery(CURRENT_CAMPER_QUERY);
+
+  return (
+    <>
+      <Layout>
+        <Hero />
+        <CampDetails />
+        <Features />
+      </Layout>
+    </>
+  );
+};
 
 export default Home;

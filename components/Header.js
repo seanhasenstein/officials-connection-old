@@ -1,13 +1,19 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { useState, useEffect, ReactComponent } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { withRouter } from 'next/router';
+import { CURRENT_CAMPER_QUERY, CAMPER_LOGOUT_MUTATION } from './Camper';
 import Hamburger from './Hamburger';
 import theme from './styles/theme';
 import ActiveLink from './ActiveLink';
 import LogoSvg from './icons/LogoSvg';
 
-const Header = ({ router }) => {
+const Header = () => {
+  const { loading, error, data } = useQuery(CURRENT_CAMPER_QUERY);
+  const [camperLogout] = useMutation(CAMPER_LOGOUT_MUTATION, {
+    refetchQueries: [{ query: CURRENT_CAMPER_QUERY }],
+  });
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   useEffect(() => {
@@ -42,9 +48,14 @@ const Header = ({ router }) => {
           <ActiveLink href="/register" activeClassName="active">
             <a>Register</a>
           </ActiveLink>
-          <ActiveLink href="/login" activeClassName="active">
-            <a>Sign In</a>
-          </ActiveLink>
+
+          {data && data.camper ? (
+            <a onClick={() => camperLogout()}>Logout</a>
+          ) : (
+            <ActiveLink href="/login" activeClassName="active">
+              <a>Sign In</a>
+            </ActiveLink>
+          )}
         </div>
       </nav>
     </header>

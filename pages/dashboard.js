@@ -1,38 +1,39 @@
-import Head from 'next/head';
-import { useMutation } from '@apollo/react-hooks';
-import { useRouter } from 'next/router';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import Authenticated from '../components/Authenticated';
-import { CURRENT_CAMPER_QUERY } from '../components/CurrentCamper';
-
-const CAMPER_LOGOUT_MUTATION = gql`
-  mutation CAMPER_LOGOUT_MUTATION {
-    camperLogout {
-      message
-    }
-  }
-`;
+import Router from 'next/router';
+import Layout from '../components/Layout';
+import Login from './login';
+import {
+  useCamper,
+  CURRENT_CAMPER_QUERY,
+  CAMPER_LOGOUT_MUTATION,
+} from '../components/Camper';
 
 const Dashboard = () => {
-  const router = useRouter();
   const [camperLogout] = useMutation(CAMPER_LOGOUT_MUTATION, {
-    onCompleted() {
-      if (typeof window !== 'undefined') router.push('/login');
-    },
+    refetchQueries: [{ query: CURRENT_CAMPER_QUERY }],
   });
+  const { loading, error, data } = useQuery(CURRENT_CAMPER_QUERY);
 
-  const handleLogout = () => {
-    camperLogout();
+  const handleLogout = async () => {
+    const result = await camperLogout();
+    Router.push('/login');
   };
 
+  if (loading) return <div>Loading...</div>;
+
+  const { camper } = data;
+
   return (
-    <Authenticated>
-      <Head>
-        <title>Dashboard - Officials Connection</title>
-      </Head>
-      <h3>This will be the admin dashboard logged in page...</h3>
-      <button onClick={handleLogout}>Logout</button>
-    </Authenticated>
+    <>
+      {!camper ? <Login /> : null}
+      {camper && (
+        <Layout>
+          <h2>Hello, {camper.firstName},</h2>
+          <button onClick={handleLogout}>Logout</button>
+        </Layout>
+      )}
+    </>
   );
 };
 

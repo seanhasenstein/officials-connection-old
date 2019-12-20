@@ -69,6 +69,7 @@ const resolvers = {
 
       // 4. Set the cookie with the JWT Token
       res.cookie('token', token, {
+        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 30,
       });
 
@@ -77,7 +78,6 @@ const resolvers = {
     },
     // ************* LOGOUT MUTATION ************* //
     camperLogout(_parent, args, ctx, info) {
-      console.log(ctx.res);
       ctx.res.clearCookie('token');
       return { message: 'You are successfully logged out.' };
     },

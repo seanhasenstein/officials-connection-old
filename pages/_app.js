@@ -1,11 +1,13 @@
 import App from 'next/app';
 import Head from 'next/head';
 import { Global } from '@emotion/core';
+import { ApolloProvider } from '@apollo/react-hooks';
 import { globalReset } from '../components/styles/globalReset';
+import withData from '../lib/apollo';
 
 class MyApp extends App {
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, apollo } = this.props;
 
     return (
       <>
@@ -20,10 +22,12 @@ class MyApp extends App {
             rel="stylesheet"
           />
         </Head>
-        <Component {...pageProps} />
+        <ApolloProvider client={apollo}>
+          <Component {...pageProps} />
+        </ApolloProvider>
       </>
     );
   }
 }
 
-export default MyApp;
+export default withData(MyApp);

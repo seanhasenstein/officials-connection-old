@@ -13,7 +13,6 @@ import theme from '../components/styles/theme';
 import StateSelectOptions from '../components/StateSelectOptions';
 import SelectArrowIcon from '../components/icons/SelectArrowIcon';
 import CheckIcon from '../components/icons/CheckIcon';
-import withData from '../lib/apollo';
 
 // load Stripe checkout component client-side only
 // b/c it needs window.Stripe
@@ -132,7 +131,7 @@ const InjectedRegistrationForm = props => {
       },
     }
   );
-  console.log(data);
+
   const updateFieldValue = field => event => {
     dispatch({
       type: 'updateField',
@@ -614,4 +613,4 @@ const styles = css`
   }
 `;
 
-export default withData(InjectedRegistrationForm);
+export default InjectedRegistrationForm;

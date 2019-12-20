@@ -49,6 +49,7 @@ const apolloServer = new ApolloServer({
     }
 
     if (!req.camperId) return { req, res };
+
     const camper = await Camper.findById(req.camperId);
     req.camper = camper;
 

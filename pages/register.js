@@ -1,9 +1,14 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { useState, useReducer } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import {
+  StripeProvider,
+  Elements,
+  CardElement,
+  injectStripe,
+} from 'react-stripe-elements';
 import gql from 'graphql-tag';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Router from 'next/router';
 import Layout from '../components/Layout';
@@ -13,13 +18,6 @@ import theme from '../components/styles/theme';
 import StateSelectOptions from '../components/StateSelectOptions';
 import SelectArrowIcon from '../components/icons/SelectArrowIcon';
 import CheckIcon from '../components/icons/CheckIcon';
-
-// load Stripe checkout component client-side only
-// b/c it needs window.Stripe
-const DynamicCheckoutComponent = dynamic(
-  () => import('../components/StripeCheckoutForm'),
-  { ssr: false }
-);
 
 const INITIAL_STATE = {
   firstName: 'Sean',
@@ -38,7 +36,7 @@ const INITIAL_STATE = {
   emergencyContactPhone: '(920) 123-4567',
   notes: 'This is my note for you...',
   liabilityAgreement: true,
-  password: 'password1234',
+  password: 'pass',
 };
 
 const reducer = (state, action) => {
@@ -168,6 +166,8 @@ const InjectedRegistrationForm = props => {
     }
   };
 
+  console.log(props);
+
   const handleSubmit = async e => {
     e.preventDefault();
     const { token } = await props.stripe.createToken();
@@ -199,13 +199,14 @@ const InjectedRegistrationForm = props => {
         },
       },
     }).catch(error => console.error(error));
+
+    console.log('result: ', result);
   };
 
   return (
     <Layout>
       <Head>
         <title>WBYOC Registration - Officials Connection</title>
-        <script src="https://js.stripe.com/v3/" />
       </Head>
       <div css={styles} className="checkout">
         <h2>2020 WBYOC Registration</h2>
@@ -473,7 +474,14 @@ const InjectedRegistrationForm = props => {
             </div>
           </fieldset>
 
-          <DynamicCheckoutComponent />
+          {/* STRIPE CARDELEMENT STUFF */}
+          <fieldset>
+            <div className="divider">
+              <hr />
+              <span>Payment Information</span>
+            </div>
+            <CardElement />
+          </fieldset>
 
           <button>Submit Registration</button>
         </form>
@@ -613,4 +621,23 @@ const styles = css`
   }
 `;
 
-export default InjectedRegistrationForm;
+// Wrapping component in StripeProvider
+const RegistrationForm = injectStripe(InjectedRegistrationForm);
+
+const Register = () => {
+  const [stripe, setStripe] = useState(null);
+
+  useEffect(() => {
+    setStripe(Stripe('pk_test_UAxQ0aZr3Nla1TPkosBOAa73'));
+  }, []);
+
+  return (
+    <StripeProvider stripe={stripe}>
+      <Elements>
+        <RegistrationForm />
+      </Elements>
+    </StripeProvider>
+  );
+};
+
+export default Register;

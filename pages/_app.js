@@ -16,6 +16,7 @@ class MyApp extends App {
           <title>
             Officials Connection - Wisconsin Basketball Yearbook Officials Camps
           </title>
+          <script src="https://js.stripe.com/v3/" />
           <link rel="icon" href="/favicon.ico" />
           <link
             href="https://fonts.googleapis.com/css?family=Barlow+Condensed:400,500|Montserrat:300,400&display=swap"

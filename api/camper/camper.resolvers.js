@@ -1,8 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { randomBytes } from 'crypto';
+import { promisify } from 'util';
 import { AuthenticationError } from 'apollo-server-micro';
 import Camper from './camper.model';
 import Registration from '../registration/registration.model';
+import mailgun from 'mailgun-js';
 
 const resolvers = {
   Query: {
@@ -77,9 +80,86 @@ const resolvers = {
       return camper;
     },
     // ************* LOGOUT MUTATION ************* //
-    camperLogout(_parent, args, ctx, info) {
+    camperLogout(_parent, args, ctx, _info) {
       ctx.res.clearCookie('token');
       return { message: 'You are successfully logged out.' };
+    },
+    async resetRequest(_parent, args, _ctx, _info) {
+      // 1. Check if this is a real camper
+      const camper = await Camper.findOne({ email: args.email });
+      console.log(camper);
+      if (!camper) {
+        throw new Error(`No user found with the email ${args.email}`);
+      }
+
+      // 2. Set a reset token and expiry on that camper
+      const randomBytesPromisified = promisify(randomBytes);
+      const resetToken = (await randomBytesPromisified(20)).toString('hex');
+      const resetTokenExpiry = Date.now() + 3600000; // expires in 1 hour
+      const res = await Camper.findOneAndUpdate(
+        { email: args.email },
+        { resetToken, resetTokenExpiry },
+        { new: true }
+      );
+      console.log(res);
+
+      // 3. Email the camper the reset token
+      const mg = mailgun({
+        apiKey: process.env.MAILGUN_API_KEY,
+        domain: process.env.MAILGUN_DOMAIN,
+      });
+
+      await mg
+        .messages()
+        .send({
+          from: 'Officials Connection <wbyoc@officialsconnection.org>',
+          to: camper.email,
+          subject: 'Your Password Reset Token',
+          text: `http://localhost:3000/reset?resetToken=${resetToken}`,
+        })
+        .catch(error => {
+          console.error(error);
+          throw new Error('There was an error with the MailGun API!');
+        });
+
+      // 4. Return the message
+      return {
+        message: `Reset instructions were sent to ${args.email}`,
+      };
+    },
+    async resetPassword(_parent, args, ctx, _info) {
+      // 1. Check if the passwords match
+      if (args.password !== args.confirmPassword) {
+        throw new Error("The passwords don't match!");
+      }
+      // 2. Check if the token is legit
+      const camper = await Camper.findOne({ resetToken: args.resetToken });
+      if (!camper) throw new Error('This reset token is invalid.');
+      // 3. Check if the token is expired
+      if (camper.resetTokenExpiry < Date.now - 3600000) {
+        throw new Error('This reset token has expired!');
+      }
+      // 4. Hash the new password
+      const password = await bcrypt.hash(args.password, 10);
+      // 5. Save the new password to the camper and remove old resetToken and resetTokenExpiry
+      const updatedCamper = await Camper.findByIdAndUpdate(
+        camper._id,
+        { password, resetToken: null, resetTokenExpiry: null },
+        { new: true }
+      );
+      // 6. Generate JWT
+      const token = jwt.sign(
+        { camperId: updatedCamper._id },
+        process.env.JWT_SECRET
+      );
+      console.log('token: ', token);
+      // 7. Set the JWT cookie
+      ctx.res.cookie('token', token, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+      });
+      // 8. return the camper
+      return updatedCamper;
     },
   },
   // ************* CAMPER TYPE ************* //

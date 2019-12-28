@@ -1,5 +1,4 @@
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import Router from 'next/router';
 import Layout from '../components/Layout';
 import Login from './login';
@@ -29,6 +28,9 @@ const Dashboard = () => {
       {!camper ? <Login /> : null}
       {camper && (
         <Layout>
+          {Router.router.query.password === 'updated' && (
+            <div>Your password was successfully updated!</div>
+          )}
           <h2>Hello, {camper.firstName},</h2>
           <button onClick={handleLogout}>Logout</button>
         </Layout>

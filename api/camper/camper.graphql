@@ -70,4 +70,10 @@ extend type Mutation {
   newCamper(input: NewCamperInput!): Camper!
   camperLogin(email: String!, password: String!): Camper!
   camperLogout: SuccessMessage
+  resetRequest(email: String!): SuccessMessage
+  resetPassword(
+    resetToken: String!
+    password: String!
+    confirmPassword: String!
+  ): Camper!
 }

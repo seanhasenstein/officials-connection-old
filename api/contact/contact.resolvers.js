@@ -1,10 +1,6 @@
+import mailgun from 'mailgun-js';
 import ContactMessage from './contact.model';
 import { formatTime } from '../../utils';
-
-const mailgun = require('mailgun-js')({
-  apiKey: process.env.MAILGUN_API_KEY,
-  domain: process.env.MAILGUN_DOMAIN,
-});
 
 const contactResolvers = {
   Query: {
@@ -32,18 +28,20 @@ const contactResolvers = {
       _ctx,
       _info
     ) {
-      // format data to send to MailGun
-      const data = {
-        from: 'OfficialsConnection <wbyoc@officialsconnection.org>',
-        to: 'seanhasenstein@gmail.com',
-        subject: `Contact Form Message from ${name}`,
-        text: `Name: ${name} \nEmail: ${email} \nPhone: ${phone} \nMessage: \n${message}`,
-      };
+      // send email via MailGun api
+      const mg = mailgun({
+        apiKey: process.env.MAILGUN_API_KEY,
+        domain: process.env.MAILGUN_DOMAIN,
+      });
 
-      // send data to MailGun
-      await mailgun
+      await mg
         .messages()
-        .send(data)
+        .send({
+          from: 'OfficialsConnection <wbyoc@officialsconnection.org>',
+          to: 'seanhasenstein@gmail.com',
+          subject: `Contact Form Message from ${name}`,
+          text: `Name: ${name} \nEmail: ${email} \nPhone: ${phone} \nMessage: \n${message}`,
+        })
         .catch(error => {
           console.error(error);
           throw new Error('There was an error with the MailGun API!');

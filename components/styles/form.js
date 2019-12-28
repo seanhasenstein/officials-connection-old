@@ -103,23 +103,23 @@ export const formStyles = css`
   textarea,
   select {
     &.inputSingle {
-      border-radius: 6px;
+      border-radius: 1px;
     }
     &.inputTop {
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
+      border-top-left-radius: 1px;
+      border-top-right-radius: 1px;
     }
     &.inputBottom {
-      border-bottom-left-radius: 6px;
-      border-bottom-right-radius: 6px;
+      border-bottom-left-radius: 1px;
+      border-bottom-right-radius: 1px;
     }
     &.inputright {
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
+      border-top-right-radius: 1px;
+      border-bottom-right-radius: 1px;
     }
     &.inputLeft {
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
+      border-top-left-radius: 1px;
+      border-bottom-left-radius: 1px;
     }
   }
 
@@ -202,6 +202,10 @@ export const formStyles = css`
   button {
     width: 100%;
     border-radius: 6px;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 
   .StripeElement {

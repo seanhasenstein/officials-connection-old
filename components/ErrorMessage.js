@@ -10,16 +10,13 @@ const DisplayError = ({ error }) => {
     return error.networkError.result.errors.map((error, i) => (
       <ErrorStyle key={i}>
         <p data-test="graphql-error">
-          <strong>Shoot!</strong>
           {error.message.replace('GraphQL error: ', '')}
         </p>
       </ErrorStyle>
     ));
   }
   return (
-    <ErrorStyles>
-      Shoot! {error.message.replace('GraphQL error: ', '')}
-    </ErrorStyles>
+    <ErrorStyles>{error.message.replace('GraphQL error: ', '')}</ErrorStyles>
   );
 };
 

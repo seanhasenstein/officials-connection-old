@@ -3,6 +3,7 @@ import { jsx, css } from '@emotion/core';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { withRouter } from 'next/router';
+import Link from 'next/link';
 import { CURRENT_CAMPER_QUERY, CAMPER_LOGOUT_MUTATION } from './Camper';
 import Hamburger from './Hamburger';
 import theme from './styles/theme';
@@ -27,37 +28,45 @@ const Header = () => {
 
   return (
     <header css={styles}>
-      <LogoSvg />
-      <Hamburger isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
-      <nav className={isNavOpen ? 'open' : ''}>
-        <div className="main">
-          <ActiveLink href="/" activeClassName="active">
-            <a>Home</a>
-          </ActiveLink>
-          <ActiveLink href="/" activeClassName="active">
-            <a>Camp Features</a>
-          </ActiveLink>
-          <ActiveLink href="/" activeClassName="active">
-            <a>Sessions Schedule</a>
-          </ActiveLink>
-          <ActiveLink href="/contact" activeClassName="active">
-            <a>Contact Us</a>
-          </ActiveLink>
-        </div>
-        <div className="cta">
-          <ActiveLink href="/register" activeClassName="active">
-            <a>Register</a>
-          </ActiveLink>
-
-          {data && data.camper ? (
-            <a onClick={() => camperLogout()}>Logout</a>
-          ) : (
-            <ActiveLink href="/login" activeClassName="active">
-              <a>Sign In</a>
+      <div className="wrapper">
+        <Link href="/">
+          <a>
+            <LogoSvg />
+          </a>
+        </Link>
+        <Hamburger isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
+        <nav className={isNavOpen ? 'open' : ''}>
+          <div className="main">
+            <ActiveLink href="/" activeClassName="active">
+              <a>Home</a>
             </ActiveLink>
-          )}
-        </div>
-      </nav>
+            <ActiveLink href="/" activeClassName="active">
+              <a>WBYOC Camps</a>
+            </ActiveLink>
+            <ActiveLink href="/faq" activeClassName="active">
+              <a>FAQ</a>
+            </ActiveLink>
+            <ActiveLink href="/contact" activeClassName="active">
+              <a>Contact</a>
+            </ActiveLink>
+          </div>
+          <div className="cta">
+            <ActiveLink href="/register" activeClassName="active">
+              <a>Register</a>
+            </ActiveLink>
+
+            {data && data.camper ? (
+              <a href="#" onClick={() => camperLogout()}>
+                Logout
+              </a>
+            ) : (
+              <ActiveLink href="/login" activeClassName="active">
+                <a>Sign In</a>
+              </ActiveLink>
+            )}
+          </div>
+        </nav>
+      </div>
     </header>
   );
 };
@@ -110,15 +119,13 @@ const styles = css`
       padding: 10px 5px;
       margin: 25px 0;
       font-family: ${theme.fonts.body};
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       letter-spacing: 0.5px;
       color: rgba(46, 49, 52, 0.8);
       text-transform: uppercase;
       font-weight: 500;
       border-bottom: 1px solid rgba(46, 49, 52, 0.12);
       outline: none;
-      font-size: 15px;
-      letter-spacing: 0.5px;
 
       &:focus {
         box-shadow: ${theme.outline.boxShadow};
@@ -158,6 +165,87 @@ const styles = css`
       }
 
       &:last-of-type {
+        padding-right: 0;
+      }
+    }
+  }
+
+  /* Tablet/Large Screen Styles */
+  @media (min-width: 900px) {
+    display: flex;
+    justify-content: center;
+
+    .wrapper {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    nav {
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      position: relative;
+      top: 0;
+      left: 0;
+      height: auto;
+      padding: 0;
+      /* background: #fff; */
+      border: none;
+      z-index: 1;
+      opacity: 1;
+
+      &.open {
+        top: 0;
+      }
+    }
+
+    .main a,
+    .cta a,
+    .cta a:first-of-type {
+      font-family: ${theme.fonts.heading};
+      font-size: 1.8rem;
+      font-weight: normal;
+      color: #444;
+      padding: 0 5px;
+      margin: 0 25px;
+      text-transform: none;
+      border-bottom: none;
+      outline: none;
+
+      &:focus {
+        box-shadow: ${theme.outline.boxShadow};
+        border-radius: 6px;
+      }
+
+      &:hover {
+        color: #000;
+      }
+    }
+
+    .main {
+      display: flex;
+
+      a:first-of-type {
+        margin: 0 15px 0 0;
+      }
+    }
+
+    .cta {
+      padding: 0;
+      border-top: none;
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: row;
+
+      /* Register button */
+      a:first-of-type {
+        background: none;
+        box-shadow: none;
+      }
+
+      a:last-of-type {
         padding-right: 0;
       }
     }

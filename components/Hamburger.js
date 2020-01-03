@@ -71,6 +71,10 @@ const styles = css`
       }
     }
   }
+
+  @media (min-width: 900px) {
+    display: none;
+  }
 `;
 
 export default Hamburger;

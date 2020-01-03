@@ -6,6 +6,7 @@ import { AuthenticationError } from 'apollo-server-micro';
 import Camper from './camper.model';
 import Registration from '../registration/registration.model';
 import mailgun from 'mailgun-js';
+import { createResetEmail } from '../../lib/mjml/password';
 
 const resolvers = {
   Query: {
@@ -116,6 +117,7 @@ const resolvers = {
           to: camper.email,
           subject: 'Your Password Reset Token',
           text: `http://localhost:3000/reset?resetToken=${resetToken}`,
+          html: createResetEmail(resetToken),
         })
         .catch(error => {
           console.error(error);
